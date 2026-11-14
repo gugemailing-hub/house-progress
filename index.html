@@ -41,6 +41,18 @@ h3{font-size:15px;margin:14px 0 6px;font-weight:700;color:var(--muted)}
 .hero ul{margin:6px 0 0;padding-left:18px}
 .hero li{margin:4px 0;font-size:15.5px;line-height:1.45}
 .hero li b{font-weight:650}
+.now{font-size:19px;line-height:1.55;margin:0 0 18px;padding:14px 16px;background:var(--card);border:1px solid var(--hair);border-radius:14px}
+.now b{font-weight:700}
+h2.sec{font-size:15px;color:var(--muted);font-weight:700;margin:0 0 8px}
+.hero .who{font-size:18px;font-weight:700;margin-bottom:2px}
+.hero li{list-style:none}
+.hero ul{padding-left:0}
+.hero .dt{display:inline-block;min-width:78px;margin-right:8px;font-size:13px;font-weight:700;color:var(--doing);white-space:nowrap}
+.hero li{display:flex;align-items:baseline}
+.notes{margin:0 0 22px;border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warn-bg);border-radius:12px;padding:0 14px}
+.notes summary{cursor:pointer;padding:11px 0;font-weight:700;font-size:15.5px;color:var(--warn)}
+.notes ol{margin:0;padding:0 0 12px 22px}
+.notes li{margin:6px 0;font-size:15px;line-height:1.5}
 .prog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13.5px;color:var(--muted)}
 .bar{flex:1;height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--ok)}
@@ -60,7 +72,7 @@ h3{font-size:15px;margin:14px 0 6px;font-weight:700;color:var(--muted)}
 
 /* ---- 交接表 ---- */
 .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--hair);border-radius:14px;background:var(--card)}
-table{border-collapse:collapse;width:100%;min-width:900px;font-size:14.5px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:15px}
 th,td{padding:10px 12px;text-align:left;vertical-align:top;border-top:1px solid var(--hair);line-height:1.45}
 th{border-top:0;font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap;background:color-mix(in srgb,var(--chip) 50%,var(--card))}
 td.who{font-weight:650;white-space:nowrap}
@@ -155,20 +167,22 @@ section[hidden]{display:none}
   <h1>新房装修进度</h1>
   <p class="sub" id="sub"></p>
 
+  <p class="now" id="now"></p>
+  <h2 class="sec">这周谁做什么</h2>
   <div class="hero" id="hero"></div>
-  <div class="prog"><span id="progLabel"></span><div class="bar"><i id="progBar"></i></div></div>
-  <div id="alerts"></div>
+  <details class="notes" id="notes"></details>
+  <h2 class="sec">想看细一点，点下面四个按钮</h2>
 
-  <div class="tabs" role="tablist">
-    <button class="tab" role="tab" data-v="coord">谁在等谁</button>
+  <div class="tabs" role="tablist" style="margin-top:8px">
+    <button class="tab" role="tab" data-v="coord">各家安排</button>
     <button class="tab" role="tab" data-v="gantt">时间表</button>
-    <button class="tab" role="tab" data-v="check">开工前检查</button>
+    <button class="tab" role="tab" data-v="check">能开工吗</button>
     <button class="tab" role="tab" data-v="pits">踩过的坑</button>
   </div>
 
   <section id="v-coord" role="tabpanel">
-    <h2>各家交接表</h2>
-    <p class="hint">每一行是一家要交的一件事：什么时候到、最晚不能晚于哪一步、它没到会卡住谁。红字「待确认」就是今天要去问的。</p>
+    <h2>各家什么时候来，最晚不能晚于哪天</h2>
+    <p class="hint">一行是一家要做的一件事。红字「还没问到」的，是儿子要去问的。</p>
     <div class="tblwrap"><table id="coord"></table></div>
   </section>
 
@@ -178,7 +192,7 @@ section[hidden]{display:none}
       <button class="btn" id="zFit">看全部</button>
       <button class="btn" id="zBig">放大</button>
     </div>
-    <p class="hint">按大块工序分组。<b>点任意一行</b>：橙色／绿色标出它开工前要等的工序，蓝色标出它卡着的工序，并画出连线。🔒 表示前置还没完成，先别让这一家进场。</p>
+    <p class="hint">一行是一道工序，横条是它做的那几天。<b>点一行</b>，能看到它要等谁先做完。🔒＝前面的还没做完，先别让这一家进场。</p>
     <div class="gwrap">
       <div class="gscroll" id="gscroll"><div id="gantt"></div></div>
       <div class="gnote" id="gnote"></div>
@@ -186,8 +200,8 @@ section[hidden]{display:none}
   </section>
 
   <section id="v-check" role="tabpanel" hidden>
-    <h2>被催进场了？先在这里查</h2>
-    <p class="hint">选一个工序，看它的前置是不是都完成了。有一项没完成，就先别让师傅进场。</p>
+    <h2>师傅催着要进场？先在这里查能不能开工</h2>
+    <p class="hint">点左边一道工序，右边会告诉你：它前面的事做完没有。有一项没做完，就先别让师傅进场。</p>
     <div class="picks">
       <div class="pickcol" id="picks"></div>
       <div class="card det" id="checkOut"></div>
@@ -196,7 +210,7 @@ section[hidden]{display:none}
 
   <section id="v-pits" role="tabpanel" hidden>
     <h2>踩过的坑</h2>
-    <p class="hint">按时间排，最新的在前。每条写了「下次怎么做」，相关工序的开工前检查里也会自动提醒。</p>
+    <p class="hint">已经吃过的亏，记下来，后面别再犯。绿字是下次该怎么做。</p>
     <div class="pits" id="pits"></div>
   </section>
 
@@ -215,42 +229,45 @@ section[hidden]{display:none}
    ============================================================ */
 const DATA = {
   updated: "2026-11-14",
-  targetText: "原目标 2027 年春节（2 月 6 日）前入住，按现在的顺序很可能赶不上",
+  now: "现在：<b>吊顶做完了</b>，等妈妈验收；<b>外墙</b>在修补，大约 11 月 24 日开始喷漆；<b>推拉门门框</b> 11 月 20 日（周五）送到、开始装。",
   range: ["2026-11-01", "2027-02-14"],
   cny: "2027-02-06",
   hero: [
-    { k:"今天", d:"11 月 14 日", items:[
-      "<b>吊顶做完了</b>，妈妈已和吊顶队量完尺寸",
-      "<b>外墙队</b>开始修补空鼓、批抗裂砂浆、贴分格铝条",
-      "推拉门厂家回话：<b>门框下周五（11 月 20 日）运到并开始装</b>" ] },
-    { k:"明天", d:"11 月 15 日", items:[
-      "<b>妈妈验收吊顶</b>，合格后再付尾款",
-      "量 4 个卫生间外墙排风孔的直径" ] },
-    { k:"接下来 10 天", d:"到 11 月 24 日左右", items:[
-      "外墙修补、抗裂砂浆、铝条做完（约 10 天）",
-      "<b>11 月 20 日推拉门门框到货、开始装</b>，装好外墙队才开喷、收门口的边",
-      "大砖下单（定制周期长，最晚 11 月中）" ] }
+    { who:"工地上这周有谁", items:[
+      { d:"每天",        t:"外墙队修补、批砂浆、贴铝条，做到 11 月 24 日左右" },
+      { d:"11/20 周五",  t:"门窗厂送推拉门门框来，开始装" },
+      { d:"11/24 前后",  t:"外墙队开始喷漆（门框要先装完）" } ] },
+    { who:"妈妈要做（在工地）", items:[
+      { d:"11/15 周日",  t:"<b>验收吊顶</b>，合格再付尾款" },
+      { d:"11/15 周日",  t:"量 4 个卫生间外墙排风孔有多大，拍照" },
+      { d:"11/20 周五",  t:"收门框：数够 6 樘，装之前对好高度" },
+      { d:"喷漆前",      t:"和外墙队把「不喷、留着贴砖」的地方画线、拍照" } ] },
+    { who:"儿子要做（在深圳）", items:[
+      { d:"这两天",      t:"<b>大砖下单</b>，问清几天到货" },
+      { d:"这两天",      t:"问门窗厂：6 樘门框几天装完" },
+      { d:"这两天",      t:"问外墙队：哪天开喷、哪天喷完、哪天拆架子" },
+      { d:"本周",        t:"和泥工商量：卫生间、厨房能不能先做防水、贴砖" } ] }
   ],
-  alerts: [
-    { lv:"warn", t:"<b>推拉门门框 11 月 20 日（下周五）运到并开始装：</b>外墙队大约 11 月 24 日修补完就要喷漆，门框要在开喷前装完，他们才能把门口的边收好。<b>还要问一句：</b>6 樘门框几天能装完；装不完就请外墙队先喷没有门的那几面墙。" },
-    { lv:"stop", t:"<b>春节前入住很可能赶不上：</b>现在的约定是「防水、贴砖都等外墙做完再开始」，外墙漆估计要喷到 12 月下旬，贴砖最早 1 月才开工，1 月底工人又要回家过年。<b>可以商量的办法：</b>卫生间、厨房的防水和贴砖在室内，不受外墙影响，可以和外墙同时做，只把阳台留到最后。要先和泥工确认。" },
-    { lv:"warn", t:"<b>吊顶已经先做了，后面两步要多留心：</b>① 厨房、卫生间贴墙砖时，砖要顶到吊顶下沿，接缝用收边条或防霉胶收口；② 楼上卫生间、露台、天台放水试漏时，楼下天花板已经封好，试水那两天要有人盯着楼下，一有湿印马上放水。" },
-    { lv:"warn", t:"<b>女儿墙喷漆、防水坎压顶贴砖（已定）：</b>阳台和露台的防水坎压顶，外墙队留出来不喷；等防水做完、砖贴好再收口。开喷前要和外墙队在现场把留白的分界线画出来、拍照。" },
-    { lv:"warn", t:"<b>喷漆前还有三件小事没落实：</b>一楼风管机的外墙孔打了没有、卫生间排风孔要不要扩大、窗边和空调孔的防水谁来做。漆喷完再动这些，会留下补漆色差。" }
+  notesTitle: "要留心的 4 件事（点开看）",
+  notes: [
+    "<b>春节前可能住不进去。</b>现在约好防水、贴砖都等外墙做完，外墙漆估计喷到 12 月下旬。想快一点：卫生间、厨房在屋里，可以和外墙同时做，要先和泥工商量。",
+    "<b>吊顶已经先做了。</b>厨房、卫生间贴墙砖要顶到吊顶下沿；楼上放水试漏那两天，要有人盯着楼下天花板。",
+    "<b>喷漆前要办完三件小事。</b>一楼风管机的外墙孔、卫生间排风孔够不够大、窗边和空调孔的防水谁来做。喷完再动会留下补漆印。",
+    "<b>阳台、露台防水坎的顶面不喷漆。</b>留着等防水做完再贴砖；女儿墙照常喷。"
   ],
   coord: [
-    { hot:true, who:"推拉门厂家", what:"阳台、露台 6 樘推拉门的门框到货并装好", when:"11 月 20 日（下周五）运到并开始装；几天装完<span class='tbd'>待确认</span>", before:"外墙开喷前，约 11 月 24 日", blocks:"外墙队喷漆、防水队进场", st:"todo", chase:"儿子问几天装完；妈妈当天收货、对高度" },
+    { hot:true, who:"推拉门厂家", what:"阳台、露台 6 樘推拉门的门框到货并装好", when:"11 月 20 日（下周五）运到并开始装；几天装完<span class='tbd'>还没问到</span>", before:"外墙开喷前，约 11 月 24 日", blocks:"外墙队喷漆、防水队进场", st:"todo", chase:"儿子问几天装完；妈妈当天收货、对高度" },
     { who:"吊顶队", what:"吊顶完工，等验收", when:"11 月 15 日妈妈验收", before:"付尾款之前", blocks:"泥工贴砖、油漆", st:"doing", chase:"妈妈现场验收，合格再付款" },
     { who:"外墙队", what:"修补空鼓、批抗裂砂浆、贴分格铝条", when:"约 11 月 24 日做完（估）", before:"喷漆前", blocks:"喷外墙漆", st:"doing", chase:"妈妈拍每天进度" },
-    { hot:true, who:"外墙队", what:"喷外墙漆的开工日、完工日，拆架子的日期", when:"<span class='tbd'>待确认</span>（这里先按 11 月 25 日到 12 月 25 日估）", before:"越早给越好，后面几家都按它排", blocks:"泥工、防水队、门窗厂回来装玻璃", st:"risk", chase:"儿子问外墙队负责人" },
-    { hot:true, who:"瓷砖厂家", what:"客厅、卧室大砖下单（定制，要等工厂做）", when:"最晚 11 月中下单；到货周期<span class='tbd'>待确认</span>", before:"泥工铺地砖前到货", blocks:"铺地砖", st:"risk", chase:"儿子发问价单、要工期" },
-    { who:"泥工（贴砖）", what:"定开工日；确认厨卫防水能不能不等外墙", when:"<span class='tbd'>待确认</span>", before:"现在的约定：外墙做完、露台支架拆掉之后", blocks:"橱柜量尺、油漆、入住", st:"risk", chase:"儿子和泥工商量" },
+    { hot:true, who:"外墙队", what:"喷外墙漆的开工日、完工日，拆架子的日期", when:"<span class='tbd'>还没问到</span>（这里先按 11 月 25 日到 12 月 25 日估）", before:"越早给越好，后面几家都按它排", blocks:"泥工、防水队、门窗厂回来装玻璃", st:"risk", chase:"儿子问外墙队负责人" },
+    { hot:true, who:"瓷砖厂家", what:"客厅、卧室大砖下单（定制，要等工厂做）", when:"最晚 11 月中下单；到货周期<span class='tbd'>还没问到</span>", before:"泥工铺地砖前到货", blocks:"铺地砖", st:"risk", chase:"儿子发问价单、要工期" },
+    { who:"泥工（贴砖）", what:"定开工日；确认厨卫防水能不能不等外墙", when:"<span class='tbd'>还没问到</span>", before:"现在的约定：外墙做完、露台支架拆掉之后", blocks:"橱柜量尺、油漆、入住", st:"risk", chase:"儿子和泥工商量" },
     { who:"门窗厂", what:"回来给窗框外侧打胶，再装玻璃和窗扇", when:"外墙漆喷完后，约 12 月底（估）", before:"打胶要在拆架子之前；玻璃要在批腻子之前", blocks:"拆架子、批腻子", st:"todo", chase:"外墙漆快喷完时儿子约门窗厂" },
-    { who:"防水队", what:"天台、露台防水，放水试 48 小时", when:"进场日<span class='tbd'>待确认</span>", before:"他们要求：外墙漆喷完、室内砖贴完、推拉门框装好之后", blocks:"露台贴砖、压顶贴砖、太空能安装", st:"todo", chase:"前面三样有了日期再约" },
+    { who:"防水队", what:"天台、露台防水，放水试 48 小时", when:"进场日<span class='tbd'>还没问到</span>", before:"他们要求：外墙漆喷完、室内砖贴完、推拉门框装好之后", blocks:"露台贴砖、压顶贴砖、太空能安装", st:"todo", chase:"前面三样有了日期再约" },
     { who:"妈妈 + 儿子", what:"量 4 个卫生间外墙排风孔直径，定止逆阀，下浴霸单", when:"11 月 15 日量", before:"要扩孔就必须在外墙喷漆前", blocks:"浴霸安装", st:"risk", chase:"妈妈量、拍照；儿子下单" },
-    { who:"空调安装师傅", what:"一楼客厅风管机的外墙孔", when:"孔打了没有<span class='tbd'>待确认</span>", before:"外墙喷漆前", blocks:"喷外墙漆", st:"risk", chase:"妈妈现场看、拍照" },
-    { who:"太空能安装师傅", what:"天台主机的底座怎么做", when:"<span class='tbd'>待确认</span>", before:"天台防水之前", blocks:"天台防水", st:"risk", chase:"儿子问安装师傅" },
-    { who:"天窗厂家", what:"楼梯顶上的推拉天窗（还没找厂家）", when:"<span class='tbd'>待确认</span>", before:"天台防水之前", blocks:"天台防水收边", st:"risk", chase:"妈妈带问询单去问" },
+    { who:"空调安装师傅", what:"一楼客厅风管机的外墙孔", when:"孔打了没有<span class='tbd'>还没问到</span>", before:"外墙喷漆前", blocks:"喷外墙漆", st:"risk", chase:"妈妈现场看、拍照" },
+    { who:"太空能安装师傅", what:"天台主机的底座怎么做", when:"<span class='tbd'>还没问到</span>", before:"天台防水之前", blocks:"天台防水", st:"risk", chase:"儿子问安装师傅" },
+    { who:"天窗厂家", what:"楼梯顶上的推拉天窗（还没找厂家）", when:"<span class='tbd'>还没问到</span>", before:"天台防水之前", blocks:"天台防水收边", st:"risk", chase:"妈妈带问询单去问" },
     { who:"橱柜厂", what:"上门量尺 → 工厂生产 30～45 天 → 安装", when:"厨房墙砖贴完当周量尺", before:"想春节能做饭，量尺越早越好", blocks:"厨房能用", st:"todo", chase:"贴厨房墙砖前一周约" }
   ],
   groups: [
@@ -443,7 +460,7 @@ const FIGS = {
 const S = DATA.steps, BY = Object.fromEntries(S.map(s => [s.id, s]));
 const G = Object.fromEntries(DATA.groups.map(g => [g.id, g]));
 const PIT = Object.fromEntries(DATA.pits.map(p => [p.id, p]));
-const ST = { done:"已完成", doing:"正在做", todo:"还没开始", risk:"待确认" };
+const ST = { done:"做完了", doing:"正在做", todo:"还没开始", risk:"还没定" };
 const DAY = 86400000;
 const D = s => new Date(s + "T00:00:00");
 const md = s => { const d = D(s); return (d.getMonth() + 1) + "/" + d.getDate(); };
@@ -452,37 +469,36 @@ const nexts = st => S.filter(x => (x.pre || []).includes(st.id));
 const rangeText = st => st.s ? (st.s === st.e ? md(st.s) : md(st.s) + "–" + md(st.e)) : "";
 
 function header(){
-  document.getElementById("sub").textContent = `最后更新：${DATA.updated} · ${DATA.targetText}`;
+  const u = D(DATA.updated);
+  document.getElementById("sub").textContent = `${u.getMonth() + 1} 月 ${u.getDate()} 日更新`;
+  document.getElementById("now").innerHTML = DATA.now;
   document.getElementById("hero").innerHTML = DATA.hero.map(h =>
-    `<div class="card"><div class="k">${h.k}</div><div class="d">${h.d}</div><ul>${h.items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("");
-  const done = S.filter(s => s.status === "done").length;
-  document.getElementById("progLabel").textContent = `已完成 ${done} / ${S.length} 步`;
-  document.getElementById("progBar").style.width = Math.round(done / S.length * 100) + "%";
-  document.getElementById("alerts").innerHTML = DATA.alerts.map(a => `<div class="alert ${a.lv}">${a.t}</div>`).join("");
+    `<div class="card"><div class="who">${h.who}</div><ul>${h.items.map(i => `<li><span class="dt">${i.d}</span><span>${i.t}</span></li>`).join("")}</ul></div>`).join("");
+  document.getElementById("notes").innerHTML = `<summary>${DATA.notesTitle}</summary><ol>${DATA.notes.map(n => `<li>${n}</li>`).join("")}</ol>`;
 }
 
 function coord(){
-  const head = ["谁", "要交付什么", "预计什么时候", "最晚不能晚于", "没到会卡住谁", "状态", "谁去追"];
+  const head = ["谁", "要做什么", "什么时候", "必须赶在什么之前", "状态"];
   document.getElementById("coord").innerHTML =
     `<thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>` +
-    DATA.coord.map(c => `<tr class="${c.hot ? "hot" : ""}"><td class="who">${c.who}</td><td>${c.what}</td><td>${c.when}</td><td>${c.before}</td><td>${c.blocks}</td><td><span class="pill ${c.st}">${ST[c.st]}</span></td><td>${c.chase}</td></tr>`).join("") + "</tbody>";
+    DATA.coord.map(c => `<tr class="${c.hot ? "hot" : ""}"><td class="who">${c.who}</td><td>${c.what}</td><td>${c.when}</td><td>${c.before}</td><td><span class="pill ${c.st}">${ST[c.st]}</span></td></tr>`).join("") + "</tbody>";
 }
 
 function detail(st){
   const um = unmet(st), needs = st.need || [];
   let v;
-  if (st.status === "done") v = `<div class="verdict go">这一步已经完成</div>`;
-  else if (um.length) v = `<div class="verdict no">⛔ 先别让这一家进场：还有 ${um.length} 项前置没完成</div>`;
-  else if (needs.length || st.status === "risk") v = `<div class="verdict wait">前面的工序都完成了，但还有事项要先确认</div>`;
-  else v = `<div class="verdict go">✅ 前置都完成了，可以开工</div>`;
+  if (st.status === "done") v = `<div class="verdict go">这一步已经做完了</div>`;
+  else if (um.length) v = `<div class="verdict no">⛔ 先别让这一家进场：前面还有 ${um.length} 件事没做完</div>`;
+  else if (needs.length || st.status === "risk") v = `<div class="verdict wait">前面的工序都做完了，但还有事要先问清楚</div>`;
+  else v = `<div class="verdict go">✅ 前面的事都做完了，可以开工</div>`;
   let h = v + `<p><b>${st.name}</b> <span class="pill ${st.status}">${ST[st.status]}</span>${st.gate ? ` <span class="pill gate">关卡</span>` : ""}<br><small style="color:var(--muted)">${G[st.g].name} · ${G[st.g].who}${st.s ? " · " + rangeText(st) : ""} · ${st.meta || ""}</small></p><p>${st.what || ""}</p>`;
   if ((st.pre || []).length || needs.length) {
-    h += `<h3>开工前必须完成</h3><ul class="cl">` +
+    h += `<h3>开工前，这些要先做完</h3><ul class="cl">` +
       (st.pre || []).map(i => { const p = BY[i]; return `<li class="${p.status === "done" ? "y" : "n"}">${p.name} <small>${ST[p.status]}${p.s ? " · " + rangeText(p) : ""}</small></li>`; }).join("") +
       needs.map(n => `<li class="q">${n}</li>`).join("") + `</ul>`;
   }
   const nx = nexts(st);
-  if (nx.length) h += `<h3>它没做完，会卡住</h3><ul class="plain">${nx.map(n => `<li>${n.name}</li>`).join("")}</ul>`;
+  if (nx.length) h += `<h3>它不做完，这些就开不了工</h3><ul class="plain">${nx.map(n => `<li>${n.name}</li>`).join("")}</ul>`;
   if (st.mom && st.mom.length) h += `<h3>现场要看的</h3><ul class="plain">${st.mom.map(m => `<li>${m}</li>`).join("")}</ul>`;
   if (st.pit && st.pit.length) h += `<h3>以前踩过的坑</h3><ul class="plain">${st.pit.map(i => `<li>${PIT[i].t}。<span style="color:var(--ok)">${PIT[i].next}</span></li>`).join("")}</ul>`;
   return h;
@@ -522,7 +538,7 @@ function renderGantt(){
   const tx = px(DATA.updated), cx = px(DATA.cny);
   const marks = `<span class="gtoday" style="left:${tx}px"></span><span class="gcny" style="left:${cx}px"></span>`;
 
-  let h = `<div class="ghead"><div class="glab">工序（点一行看前置）</div><div class="gtrack gmonths" style="width:${width}px">${months}
+  let h = `<div class="ghead"><div class="glab">工序（点一行看它要等谁）</div><div class="gtrack gmonths" style="width:${width}px">${months}
     <span class="gflag" style="left:${tx}px;color:var(--today)">今天 ${md(DATA.updated)}</span>
     <span class="gflag" style="left:${cx}px;color:var(--warn);top:26px">春节 ${md(DATA.cny)}</span></div></div><div class="gbody" id="gbody">`;
   DATA.groups.forEach(g => {
@@ -540,7 +556,7 @@ function renderGantt(){
       } else {
         bar = `<span class="gtbd" style="left:${Math.min(tx + 10, width - 90)}px">日期待排</span>`;
       }
-      const tag = st.status === "done" ? "已完成" : (um.length ? `<span class="lock">🔒 等 ${um.length} 项前置</span>` : ST[st.status]) + (st.gate ? " · 关卡" : "");
+      const tag = st.status === "done" ? "做完了" : (um.length ? `<span class="lock">🔒 要先等 ${um.length} 件事</span>` : ST[st.status]) + (st.gate ? " · 关卡" : "");
       h += `<div class="grow step" data-id="${st.id}"><button class="glab" data-id="${st.id}" aria-expanded="false">${st.name}<small>${tag}</small></button>
         <div class="gtrack" style="width:${width}px">${lines}${marks}${bar}</div></div>`;
     });
@@ -599,7 +615,7 @@ function check(){
     if (!rows.length) return;
     h += `<div class="pickg">${g.name}</div>` + rows.map(st => {
       const um = unmet(st).length;
-      const p = um ? `<span class="pill stop">等 ${um} 项</span>` : (st.status === "risk" || (st.need || []).length ? `<span class="pill risk">待确认</span>` : `<span class="pill done">可开工</span>`);
+      const p = um ? `<span class="pill stop">等 ${um} 项</span>` : (st.status === "risk" || (st.need || []).length ? `<span class="pill risk">还没定</span>` : `<span class="pill done">可开工</span>`);
       return `<button class="pick" data-id="${st.id}" aria-pressed="false"><span>${st.name}</span>${p}</button>`;
     }).join("");
   });
@@ -622,8 +638,8 @@ function pits(){
 
 function legend(){
   document.getElementById("legend").innerHTML =
-    `<span><i class="sw" style="background:var(--ok);opacity:.55"></i>已完成</span><span><i class="sw" style="background:var(--doing)"></i>正在做</span>` +
-    `<span><i class="sw" style="background:var(--warn)"></i>待确认</span><span><i class="sw" style="background:var(--todo);opacity:.55"></i>还没开始（估算）</span>` +
+    `<span><i class="sw" style="background:var(--ok);opacity:.55"></i>做完了</span><span><i class="sw" style="background:var(--doing)"></i>正在做</span>` +
+    `<span><i class="sw" style="background:var(--warn)"></i>还没定</span><span><i class="sw" style="background:var(--todo);opacity:.55"></i>还没开始（估算）</span>` +
     `<span><i class="sw" style="box-shadow:0 0 0 2px var(--stop);background:transparent"></i>关卡</span>` +
     `<span><i class="sw" style="width:2px;height:14px;background:var(--today)"></i>今天</span><span><i class="sw" style="width:0;height:14px;border-left:2px dashed var(--warn)"></i>春节</span>`;
 }
