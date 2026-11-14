@@ -4,122 +4,150 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>新房装修进度</title>
-<meta name="description" content="新房装修总体进度：现在做到哪一步、下一步是什么、哪些是必须过关的检查点。">
+<meta name="description" content="新房装修进度：现在做到哪、谁在等谁、每一步开工前必须先完成什么。">
 <style>
 :root{
-  --bg:#F6F4EF; --card:#FFFFFF; --ink:#1E2226; --muted:#5E666E; --hair:#E3DFD6;
-  --in:#D9600A; --out:#2160E0; --eq:#7A3FE0; --all:#2B3036;
-  --ok:#157A3C; --warn:#A85A00; --warn-bg:#FFF4E2; --gate:#D42A2A; --gate-bg:#FDECEC;
-  --chip:#F0EDE6; --today:#D42A2A;
+  --bg:#F5F3EE; --card:#FFFFFF; --ink:#1D2125; --muted:#5F6770; --hair:#E2DED5; --chip:#EEEBE4;
+  --ok:#157A3C; --ok-bg:#E6F4EB; --doing:#1F5FD6; --doing-bg:#E7EEFC; --todo:#8A929B;
+  --warn:#A85A00; --warn-bg:#FFF3DF; --stop:#C92A2A; --stop-bg:#FDECEC; --today:#C92A2A;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#15171A; --card:#1E2125; --ink:#ECEEF0; --muted:#A4ABB3; --hair:#33373D;
-    --in:#FF8A3D; --out:#6B9BFF; --eq:#B394FF; --all:#D9DDE2;
-    --ok:#4CC27A; --warn:#F2B04C; --warn-bg:#3A2C14; --gate:#FF6B6B; --gate-bg:#3A1C1C;
-    --chip:#2A2E33; --today:#FF6B6B;
+    --bg:#14161A; --card:#1D2024; --ink:#ECEEF0; --muted:#A3AAB2; --hair:#33373D; --chip:#2A2E33;
+    --ok:#4CC27A; --ok-bg:#173022; --doing:#7AA5FF; --doing-bg:#1B2740; --todo:#7C848D;
+    --warn:#F2B04C; --warn-bg:#3A2C14; --stop:#FF6B6B; --stop-bg:#3A1C1C; --today:#FF6B6B;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#15171A; --card:#1E2125; --ink:#ECEEF0; --muted:#A4ABB3; --hair:#33373D;
-  --in:#FF8A3D; --out:#6B9BFF; --eq:#B394FF; --all:#D9DDE2;
-  --ok:#4CC27A; --warn:#F2B04C; --warn-bg:#3A2C14; --gate:#FF6B6B; --gate-bg:#3A1C1C;
-  --chip:#2A2E33; --today:#FF6B6B;
+  --bg:#14161A; --card:#1D2024; --ink:#ECEEF0; --muted:#A3AAB2; --hair:#33373D; --chip:#2A2E33;
+  --ok:#4CC27A; --ok-bg:#173022; --doing:#7AA5FF; --doing-bg:#1B2740; --todo:#7C848D;
+  --warn:#F2B04C; --warn-bg:#3A2C14; --stop:#FF6B6B; --stop-bg:#3A1C1C; --today:#FF6B6B;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font:17px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif}
-.wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
-h1{font-size:26px;line-height:1.25;margin:0 0 4px;letter-spacing:.5px}
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif}
+.wrap{max-width:1320px;margin:0 auto;padding:20px 16px 56px}
+h1{font-size:28px;line-height:1.2;margin:0 0 4px;font-weight:700;letter-spacing:.3px}
+h2{font-size:19px;margin:0 0 4px;font-weight:700}
+h3{font-size:15px;margin:14px 0 6px;font-weight:700;color:var(--muted)}
 .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
-.card{background:var(--card);border:1px solid var(--hair);border-radius:14px;padding:16px;margin-bottom:12px}
-.now-label{font-size:13px;color:var(--muted);margin-bottom:2px}
-.now-name{font-size:21px;font-weight:700;line-height:1.35}
-.now-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
-@media (max-width:420px){.now-grid{grid-template-columns:1fr}}
-.bar{height:10px;border-radius:6px;background:var(--chip);overflow:hidden;margin-top:6px}
-.bar>i{display:block;height:100%;background:var(--ok);border-radius:6px}
-.alert{border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:15px}
-.alert.warn{background:var(--warn-bg);color:var(--ink);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
-.alert b{color:var(--warn)}
-.tabs{display:flex;gap:8px;margin:18px 0 10px}
+.hint{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--hair);border-radius:14px;padding:16px}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+@media (max-width:820px){.hero{grid-template-columns:1fr}}
+.hero .k{font-size:13px;color:var(--muted);font-weight:600}
+.hero .d{font-size:13px;color:var(--muted)}
+.hero ul{margin:6px 0 0;padding-left:18px}
+.hero li{margin:4px 0;font-size:15.5px;line-height:1.45}
+.hero li b{font-weight:650}
+.prog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13.5px;color:var(--muted)}
+.bar{flex:1;height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok)}
+.alert{border-radius:12px;padding:11px 14px;margin-bottom:8px;font-size:15px;line-height:1.5}
+.alert.stop{background:var(--stop-bg);border:1px solid color-mix(in srgb,var(--stop) 35%,transparent)}
+.alert.warn{background:var(--warn-bg);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.alert.stop b{color:var(--stop)} .alert.warn b{color:var(--warn)}
+.tabs{display:flex;gap:8px;margin:18px 0 12px;position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0}
 .tab{flex:1;appearance:none;border:1px solid var(--hair);background:var(--card);color:var(--ink);
-  font:inherit;font-size:16px;font-weight:600;padding:10px 0;border-radius:10px;cursor:pointer}
+  font:inherit;font-size:15px;font-weight:600;padding:10px 4px;border-radius:10px;cursor:pointer;line-height:1.25}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:4px 0 12px}
+.tab:focus-visible,.btn:focus-visible,.glab:focus-visible,.pick:focus-visible{outline:2px solid var(--doing);outline-offset:2px}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;white-space:nowrap;vertical-align:1px}
+.pill.done{background:var(--ok-bg);color:var(--ok)} .pill.doing{background:var(--doing-bg);color:var(--doing)}
+.pill.todo{background:var(--chip);color:var(--muted)} .pill.risk{background:var(--warn-bg);color:var(--warn)}
+.pill.stop{background:var(--stop-bg);color:var(--stop)} .pill.gate{background:var(--stop-bg);color:var(--stop)}
+
+/* ---- 交接表 ---- */
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--hair);border-radius:14px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:14.5px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-top:1px solid var(--hair);line-height:1.45}
+th{border-top:0;font-size:12.5px;color:var(--muted);font-weight:700;white-space:nowrap;background:color-mix(in srgb,var(--chip) 50%,var(--card))}
+td.who{font-weight:650;white-space:nowrap}
+td .tbd{color:var(--stop);font-weight:650}
+tr.hot td{background:color-mix(in srgb,var(--stop-bg) 55%,transparent)}
+
+/* ---- 时间表 ---- */
+.gbar-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);flex:1}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.lg-line{width:18px;height:5px;border-radius:3px;display:inline-block}
-.lg-dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:2.5px solid var(--muted)}
-.lg-dot.done{background:var(--muted)}
-.lg-dot.gate{border-radius:2px;transform:rotate(45deg);border-color:var(--gate);width:10px;height:10px}
-
-/* ---------- 地铁图 ---------- */
-.map{background:var(--card);border:1px solid var(--hair);border-radius:14px;padding:6px 0}
-.row{display:grid;grid-template-columns:78px 1fr;position:relative}
-.gut{grid-row:1 / span 2;position:relative;min-height:58px}
-.rail{position:absolute;width:5px;border-radius:2px}
-.dot{position:absolute;top:15px;width:18px;height:18px;border-radius:50%;background:var(--card);border:3px solid currentColor;
-  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:inherit;z-index:2}
-.dot.done{background:currentColor}
-.dot.done::after{content:"";width:6px;height:9px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
-.dot.doing{background:currentColor;box-shadow:0 0 0 0 currentColor;animation:pulse 1.8s infinite}
-.dot.doing::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--card)}
-.dot.gate{border-radius:3px;transform:rotate(45deg);width:17px;height:17px}
-.dot.risk{background:var(--warn);border-color:var(--warn);color:#fff}
-.dot.risk::after{content:"!";color:#fff;font-size:12px}
-@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,currentColor 55%,transparent)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
-@media (prefers-reduced-motion:reduce){.dot.doing{animation:none}}
-.hub{position:absolute;top:13px;left:6px;width:66px;height:22px;border-radius:11px;background:var(--all);z-index:2;
-  display:flex;align-items:center;justify-content:center;color:var(--card);font-size:12px;font-weight:800}
-.hub.todo{background:var(--card);border:3px solid var(--all);color:var(--all)}
-.head{appearance:none;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
-  padding:10px 14px 10px 4px;display:block;width:100%}
-.head:focus-visible{outline:2px solid var(--out);outline-offset:-2px;border-radius:8px}
-.nm{font-weight:650;font-size:17px;line-height:1.4}
-.row.done .nm{color:var(--muted);font-weight:500}
-.mt{font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.45}
-.chips{display:inline-flex;gap:5px;flex-wrap:wrap;vertical-align:1px;margin-left:4px}
-.chip{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
-.chip.doing{background:var(--ok);color:#fff}
-.chip.gate{background:var(--gate-bg);color:var(--gate)}
-.chip.risk{background:var(--warn-bg);color:var(--warn)}
-.chip.line{color:#fff}
-.wait{color:var(--gate);font-weight:600}
-.more{font-size:12.5px;color:var(--muted);margin-left:2px;white-space:nowrap}
-.det{padding:0 14px 14px 4px;font-size:15px}
-.det[hidden]{display:none}
-.det p{margin:0 0 8px}
-.det h4{margin:10px 0 4px;font-size:14px;color:var(--muted);font-weight:700}
-.det ul{margin:0;padding-left:20px}
-.det li{margin:3px 0}
-.row+.row .head{border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent)}
-.row.sel{background:color-mix(in srgb,var(--chip) 60%,transparent)}
-
-/* ---------- 时间表 ---------- */
+.sw{width:18px;height:10px;border-radius:3px;display:inline-block}
+.btn{appearance:none;border:1px solid var(--hair);background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .gwrap{background:var(--card);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
 .gscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.gt{position:relative}
-.grow{display:flex;align-items:stretch;min-height:40px;border-top:1px solid color-mix(in srgb,var(--hair) 55%,transparent)}
-.glab{position:sticky;left:0;z-index:3;width:132px;flex:0 0 132px;background:var(--card);padding:6px 8px 6px 12px;
-  font-size:13px;line-height:1.3;border-right:1px solid var(--hair)}
-.glab small{display:block;color:var(--muted);font-size:11.5px}
+.gbody{position:relative}
+.grow{display:flex;align-items:stretch;min-height:44px;border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent)}
+.glab{position:sticky;left:0;z-index:5;flex:0 0 var(--lab);width:var(--lab);background:var(--card);padding:6px 8px 6px 12px;
+  font:inherit;font-size:14px;line-height:1.3;border:0;border-right:1px solid var(--hair);text-align:left;color:inherit;cursor:pointer}
+.glab small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+.glab .lock{color:var(--stop);font-weight:700}
 .gtrack{position:relative;flex:0 0 auto}
-.gbar{position:absolute;top:11px;height:18px;border-radius:5px}
-.gbar.todo{opacity:.38}
-.gbar.doing{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 6px,transparent 6px 12px)}
-.gbar.gate{box-shadow:inset 0 0 0 2px var(--gate)}
-.gms{position:absolute;top:10px;width:18px;height:18px;transform:rotate(45deg);background:var(--all)}
-.ghead{display:flex;position:sticky;top:0;background:var(--card);z-index:4;border-bottom:1px solid var(--hair)}
-.ghead .glab{font-weight:700;color:var(--muted);font-size:12px;display:flex;align-items:flex-end}
-.gmonths{position:relative;height:44px}
-.gm{position:absolute;top:6px;font-size:13px;font-weight:700;padding-left:5px;border-left:1px solid var(--hair);height:38px}
-.gwk{position:absolute;top:26px;font-size:10.5px;color:var(--muted);transform:translateX(-50%)}
-.gline{position:absolute;top:0;bottom:0;width:1px;background:color-mix(in srgb,var(--hair) 70%,transparent);pointer-events:none}
+.ghead{display:flex;position:sticky;top:0;background:var(--card);z-index:7;border-bottom:1px solid var(--hair)}
+.ghead .glab{cursor:default;font-weight:700;color:var(--muted);font-size:12.5px;display:flex;align-items:flex-end}
+.gmonths{position:relative;height:46px}
+.gm{position:absolute;top:6px;font-size:13.5px;font-weight:700;padding-left:6px;border-left:1px solid var(--hair);height:40px;white-space:nowrap}
+.gwk{position:absolute;top:27px;font-size:11px;color:var(--muted);transform:translateX(-50%)}
+.gline{position:absolute;top:0;bottom:0;width:1px;background:color-mix(in srgb,var(--hair) 60%,transparent);pointer-events:none}
+.gline.m{background:var(--hair)}
 .gtoday{position:absolute;top:0;bottom:0;width:2px;background:var(--today);z-index:2;pointer-events:none}
-.gtoday-l{position:absolute;top:2px;font-size:11px;font-weight:700;color:var(--today);transform:translateX(4px);white-space:nowrap;z-index:5}
+.gcny{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed var(--warn);z-index:2;pointer-events:none}
+.gflag{position:absolute;top:2px;font-size:11px;font-weight:700;transform:translateX(4px);white-space:nowrap;z-index:6}
+.ggrp{background:color-mix(in srgb,var(--chip) 70%,var(--card));min-height:36px}
+.ggrp .glab{background:color-mix(in srgb,var(--chip) 70%,var(--card));font-weight:700;font-size:15px;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0}
+.ggrp .glab small{display:inline;margin:0;font-weight:500}
+.ggrp .caret{display:inline-block;transition:transform .15s;font-size:11px;color:var(--muted)}
+.ggrp[data-open="false"] .caret{transform:rotate(-90deg)}
+.gb{position:absolute;top:12px;height:20px;border-radius:5px;min-width:6px}
+.gb.done{background:var(--ok);opacity:.55}
+.gb.doing{background:var(--doing);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.3) 0 6px,transparent 6px 12px)}
+.gb.todo{background:var(--todo);opacity:.55}
+.gb.risk{background:var(--warn)}
+.gb.gate{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--stop)}
+.gbl{position:absolute;top:12px;height:20px;line-height:20px;font-size:12px;color:var(--muted);white-space:nowrap;padding-left:6px;pointer-events:none}
+.gtbd{position:absolute;top:11px;font-size:12px;color:var(--muted);border:1px dashed var(--todo);border-radius:5px;padding:1px 8px;white-space:nowrap}
+.grow.sel .glab,.grow.sel{background:color-mix(in srgb,var(--doing-bg) 80%,var(--card))}
+.grow.pre .glab{box-shadow:inset 4px 0 0 var(--warn)}
+.grow.pre.ok .glab{box-shadow:inset 4px 0 0 var(--ok)}
+.grow.nxt .glab{box-shadow:inset 4px 0 0 var(--doing)}
+.gbody.focus .grow.step:not(.sel):not(.pre):not(.nxt){opacity:.32}
+.garrows{position:absolute;top:0;left:0;pointer-events:none;z-index:4}
+.gdet{position:relative;z-index:5;border-top:1px solid var(--hair);background:color-mix(in srgb,var(--doing-bg) 45%,var(--card))}
+.gdet>div{position:sticky;left:0;padding:12px 14px 14px;font-size:15px}
 .gnote{font-size:13px;color:var(--muted);padding:10px 12px;border-top:1px solid var(--hair)}
-.foot{font-size:13px;color:var(--muted);margin-top:16px;line-height:1.6}
+
+/* ---- 详情 / 检查 ---- */
+.verdict{border-radius:10px;padding:9px 12px;font-weight:650;margin-bottom:10px;font-size:15.5px}
+.verdict.go{background:var(--ok-bg);color:var(--ok)} .verdict.no{background:var(--stop-bg);color:var(--stop)}
+.verdict.wait{background:var(--warn-bg);color:var(--warn)}
+.cl{list-style:none;margin:0;padding:0}
+.cl li{padding:4px 0 4px 26px;position:relative;line-height:1.45}
+.cl li::before{position:absolute;left:0;top:4px;width:18px;height:18px;border-radius:50%;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.cl li.y::before{content:"✓";background:var(--ok-bg);color:var(--ok)}
+.cl li.n::before{content:"✕";background:var(--stop-bg);color:var(--stop)}
+.cl li.q::before{content:"?";background:var(--warn-bg);color:var(--warn)}
+.cl li small{color:var(--muted)}
+.det p{margin:0 0 8px}
+.det ul.plain{margin:0;padding-left:20px} .det ul.plain li{margin:3px 0}
+.picks{display:grid;grid-template-columns:320px 1fr;gap:14px;align-items:start}
+@media (max-width:820px){.picks{grid-template-columns:1fr}}
+.pickcol{display:flex;flex-direction:column;gap:6px}
+.pickg{font-size:12.5px;color:var(--muted);font-weight:700;margin-top:8px}
+.pick{appearance:none;text-align:left;border:1px solid var(--hair);background:var(--card);color:var(--ink);font:inherit;font-size:14.5px;padding:8px 10px;border-radius:9px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pick[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+
+/* ---- 踩坑 ---- */
+.pits{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.pit h4{margin:0 0 6px;font-size:16px;line-height:1.4}
+.pit .no{color:var(--muted);font-weight:700;margin-right:6px}
+.pit p{margin:0 0 6px;font-size:14.5px}
+.pit .next{color:var(--ok);font-weight:600}
+.fig{margin:8px 0 4px;border:1px solid var(--hair);border-radius:10px;padding:6px;background:color-mix(in srgb,var(--chip) 40%,var(--card))}
+.fig svg{display:block;width:100%;height:auto}
+.fig text{font:12px -apple-system,"PingFang SC",sans-serif;fill:var(--ink)}
+.fig .mut{fill:var(--muted)} .fig .good{fill:var(--ok);font-weight:700} .fig .bad{fill:var(--stop);font-weight:700}
+.foot{font-size:13px;color:var(--muted);margin-top:18px;line-height:1.6}
+section[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -127,332 +155,498 @@ h1{font-size:26px;line-height:1.25;margin:0 0 4px;letter-spacing:.5px}
   <h1>新房装修进度</h1>
   <p class="sub" id="sub"></p>
 
-  <div class="card">
-    <div class="now-grid">
-      <div><div class="now-label">现在正在做</div><div class="now-name" id="nowName"></div></div>
-      <div><div class="now-label">下一个必须过关的检查</div><div class="now-name" id="nextGate"></div></div>
-    </div>
-    <div style="margin-top:14px">
-      <div class="now-label" id="progLabel"></div>
-      <div class="bar"><i id="progBar"></i></div>
-    </div>
-  </div>
+  <div class="hero" id="hero"></div>
+  <div class="prog"><span id="progLabel"></span><div class="bar"><i id="progBar"></i></div></div>
   <div id="alerts"></div>
 
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" id="t-map" aria-selected="true" aria-controls="v-map">地铁图</button>
-    <button class="tab" role="tab" id="t-gantt" aria-selected="false" aria-controls="v-gantt">时间表</button>
+    <button class="tab" role="tab" data-v="coord">谁在等谁</button>
+    <button class="tab" role="tab" data-v="gantt">时间表</button>
+    <button class="tab" role="tab" data-v="check">开工前检查</button>
+    <button class="tab" role="tab" data-v="pits">踩过的坑</button>
   </div>
 
-  <section id="v-map" role="tabpanel" aria-labelledby="t-map">
-    <div class="legend" id="legend"></div>
-    <div class="map" id="map"></div>
+  <section id="v-coord" role="tabpanel">
+    <h2>各家交接表</h2>
+    <p class="hint">每一行是一家要交的一件事：什么时候到、最晚不能晚于哪一步、它没到会卡住谁。红字「待确认」就是今天要去问的。</p>
+    <div class="tblwrap"><table id="coord"></table></div>
   </section>
 
-  <section id="v-gantt" role="tabpanel" aria-labelledby="t-gantt" hidden>
-    <div class="legend" id="legend2"></div>
+  <section id="v-gantt" role="tabpanel" hidden>
+    <div class="gbar-top">
+      <div class="legend" id="legend"></div>
+      <button class="btn" id="zFit">看全部</button>
+      <button class="btn" id="zBig">放大</button>
+    </div>
+    <p class="hint">按大块工序分组。<b>点任意一行</b>：橙色／绿色标出它开工前要等的工序，蓝色标出它卡着的工序，并画出连线。🔒 表示前置还没完成，先别让这一家进场。</p>
     <div class="gwrap">
-      <div class="gscroll"><div class="gt" id="gantt"></div></div>
+      <div class="gscroll" id="gscroll"><div id="gantt"></div></div>
       <div class="gnote" id="gnote"></div>
     </div>
   </section>
 
-  <p class="foot">点任意一站可展开说明。<b>◆ 关卡</b>＝不检查合格不准往下做，妈妈在现场看过、拍照后才付款。日期除已完成的以外都是估算，会随现场调整。</p>
+  <section id="v-check" role="tabpanel" hidden>
+    <h2>被催进场了？先在这里查</h2>
+    <p class="hint">选一个工序，看它的前置是不是都完成了。有一项没完成，就先别让师傅进场。</p>
+    <div class="picks">
+      <div class="pickcol" id="picks"></div>
+      <div class="card det" id="checkOut"></div>
+    </div>
+  </section>
+
+  <section id="v-pits" role="tabpanel" hidden>
+    <h2>踩过的坑</h2>
+    <p class="hint">按时间排，最新的在前。每条写了「下次怎么做」，相关工序的开工前检查里也会自动提醒。</p>
+    <div class="pits" id="pits"></div>
+  </section>
+
+  <p class="foot"><b>关卡</b>＝不检查合格不准往下做，妈妈在现场看过、拍照后才付款。除已完成的以外，日期都是估算，各家给出准确日期后会更新。</p>
 </div>
 
 <script>
 /* ============================================================
-   数据区：以后更新进度只改这里。
-   status: done 已完成 / doing 正在做 / todo 还没开始 / risk 待确认
-   line:   in 室内线 / out 外围线 / eq 柜子·热水·空调 / all 全线（起点、终点）
-   s/e:    计划起止（估算）；没有就不进时间表
+   数据区：以后更新进度只改这里（DATA）。
+   steps.status: done 已完成 / doing 正在做 / todo 还没开始 / risk 待确认
+   steps.g:      所属大块（groups 里的 id）
+   steps.s / e:  计划起止（估算）；不写就显示「日期待排」
+   steps.pre:    开工前必须完成的工序 id（用于🔒提醒和连线）
+   steps.need:   不在表里的其它前置条件（文字）
+   steps.pit:    相关的踩坑编号（pits 里的 id）
    ============================================================ */
 const DATA = {
-  updated: "2026-10-20",
-  target: "2027-02-06",
-  targetText: "2027 年春节（2 月 6 日）前入住",
-  lines: {
-    in:  { name: "室内线" },
-    out: { name: "外围线" },
-    eq:  { name: "买料·设备·柜子" }
-  },
-  alerts: [
-    "<b>天台、露台防水已签约：</b>进场日期待定（目标 10 月底）。付尾款前，必须放水泡够 48 小时、楼下天花板不湿；每刷一遍拍照，空桶别让他们拉走。",
-    "<b>外墙队已进场：</b>喷真石漆之前，一楼风管机外墙补孔（孔打了没有待确认）、窗边和空调孔等重点部位防水、阳台露台推拉门框（约 11 月上旬到）都要先做好，不能让他们先喷。",
-    "<b>待确认：</b>天台太空能主机的底座怎么做（混凝土墩还是钢架）。安装师傅约 10 月 22 日上门看场地，当面问清；必须在天台防水前定，防水做完再打孔就会漏。",
-    "<b>瓷砖还没买，暂时不急：</b>贴砖前还要水管打压、封水管槽、防水、闭水 48 小时。先问泥工哪天开贴，提前约一周买现货就行。",
-    "<b>时间偏紧：</b>按现在的顺序估算，硬装约 2027 年 1 月底做完，春节前入住偏紧，通风时间也不够。"
+  updated: "2026-11-14",
+  targetText: "原目标 2027 年春节（2 月 6 日）前入住，按现在的顺序很可能赶不上",
+  range: ["2026-11-01", "2027-02-14"],
+  cny: "2027-02-06",
+  hero: [
+    { k:"今天", d:"11 月 14 日", items:[
+      "<b>吊顶做完了</b>，妈妈已和吊顶队量完尺寸",
+      "<b>外墙队</b>开始修补空鼓、批抗裂砂浆、贴分格铝条",
+      "推拉门厂家回话：<b>门框下周五（11 月 20 日）运到并开始装</b>" ] },
+    { k:"明天", d:"11 月 15 日", items:[
+      "<b>妈妈验收吊顶</b>，合格后再付尾款",
+      "量 4 个卫生间外墙排风孔的直径" ] },
+    { k:"接下来 10 天", d:"到 11 月 24 日左右", items:[
+      "外墙修补、抗裂砂浆、铝条做完（约 10 天）",
+      "<b>11 月 20 日推拉门门框到货、开始装</b>，装好外墙队才开喷、收门口的边",
+      "大砖下单（定制周期长，最晚 11 月中）" ] }
   ],
-  stations: [
-    { line:"all", status:"done", name:"主体封顶", meta:"2026-05-18",
-      what:"房子的墙、梁、楼板全部完成。" },
-    { line:"in", status:"done", name:"内墙抹灰", meta:"2026 年 9 月完成",
-      what:"室内墙面抹平，电线管已经提前埋进墙里。" },
-    { line:"out", status:"done", name:"外墙抹灰", meta:"2026-09-23 完成",
-      what:"外墙抹灰打底，已经养护。" },
-    { line:"in", status:"done", name:"墙上弹好地砖高度线", meta:"2026 年 10 月完成",
-      what:"泥工在墙上弹了一条水平线，表示“地砖铺好后的地面高度”。后面吊顶有多高、门框装多高，都照这条线算。",
-      mom:["后面刷墙时别把这条线盖掉；会被盖住的地方先拍照记下位置。"] },
-    { line:"eq", status:"done", name:"一楼客厅风管机：已下单、室内机已装", meta:"2026-10-19 室内机装好",
-      what:"一楼客厅用风管机（藏在吊顶里的空调），二、三楼仍用挂机。室内机已经吊装好，室外机等外墙做完再装。",
-      mom:["吊顶封板前，要让安装师傅把铜管两头封住充氮气保压，排水管倒水试一下。"] },
-    { line:"out", status:"doing", name:"外墙空鼓检测", meta:"外墙队 10-15 前已进场，书面结果待确认", s:"2026-10-13", e:"2026-10-20",
-      what:"敲外墙，听有没有“咚咚”的空心声。有空鼓的地方要先修好，才能喷外墙漆。",
-      mom:["问外墙队要检测结果：哪里空鼓、怎么修、修完再敲一遍。"] },
-    { line:"out", status:"doing", name:"外墙队进场：买料、准备浇构件", meta:"2026-10-15 反馈 · 过几天开始支模浇筑", s:"2026-10-15", e:"2026-10-25",
-      what:"外墙队（三棵树）已进场，让我们准备材料，过几天开始支模具、浇混凝土构件。具体浇哪些构件待问清。",
-      mom:["问清这次浇的是哪些构件，有没有天台太空能底座、女儿墙压顶、门口挡水坎；这些要在天台防水之前浇完。",
-           "材料到场拍照：水泥看生产日期，沙子舔一下不咸（不能用海沙）。",
-           "构件浇完要洒水养护，拆模后拍照。"] },
-    { line:"in", status:"doing", name:"水电收尾：穿电线、装水管", meta:"正在做 · 师傅说 10-20 穿完线（待确认），水管还在装", s:"2026-10-01", e:"2026-10-24",
-      what:"把电线穿进埋好的管子里，装好冷热水管和下水管。",
-      mom:["趁还没盖住，每面墙、每个房间地面的管子走向都拍照、录视频（拉着卷尺一起拍），以后打孔才不会打到水管电线。",
-           "一楼客厅风管机：吊顶里的电源线、墙上控制器的信号线，穿线时要留好，拍照确认。"] },
-    { line:"eq", status:"risk", name:"太空能底座怎么做", meta:"安装师傅约 10-22 上门看场 · 必须在天台防水前定", s:"2026-10-15", e:"2026-10-26",
-      what:"天台要放太空能主机和水箱，底座（混凝土墩或钢架）要在防水前定好、做好。防水做完再在上面打孔，就会漏水。",
-      mom:["安装师傅来看场时当面问：底座谁做、哪天做、混凝土墩还是钢架？要赶在天台防水前。拍照发回来。"] },
-    { line:"in", status:"todo", gate:true, name:"水电验收", meta:"预计 10 月下旬", s:"2026-10-25", e:"2026-10-27",
-      what:"墙里、地下的水管电线被防水和瓷砖盖住之前，最后一次全面检查。这一步不能省，以后漏水就要砸砖。",
-      mom:["跟师傅说：打完压那个表先别拆，放几天。然后每天早晚拍一张表盘，连拍 3 天，指针基本不动才算不漏。",
-           "穿完线、装面板前，挑几个远处的插座盒，拉一拉电线，拉得动才行。",
-           "每个下水口倒一桶水，看流得顺不顺、有没有漏。",
-           "不碰电箱里的线、不拧水管堵头。压力表一直往下掉，先别刷防水，发给儿子。"] },
-    { line:"in", status:"todo", name:"封水管槽", meta:"泥工 · 水管打压合格、拍完照之后", s:"2026-10-28", e:"2026-10-28",
-      what:"之前批荡时水管槽没封，水管装好、打压合格、拍完照后再把槽封平，才能刷防水。",
-      mom:["封之前每条水管槽都拍照、录视频（拉着卷尺一起拍）。"] },
-    { line:"eq", status:"todo", name:"厨卫墙砖买好、到货", meta:"还没买 · 贴墙砖前约一周买现货", s:"2026-10-29", e:"2026-11-05",
-      what:"贴砖前还要打压、封槽、防水、闭水，所以不用急。先问泥工哪天开贴，提前约一周买现货；同一种砖要同一批次，颜色才一致。客厅卧室的地砖最晚 11 月中前下单。",
-      mom:["到货当面开箱，几箱对比看颜色、批号是否一样，有色差先别贴。"] },
-    { line:"out", status:"todo", name:"露台地面做坡度", meta:"贴砖师傅做 · 预计 10 月下旬", s:"2026-10-20", e:"2026-10-26",
-      what:"把露台地面做成往排水口方向斜，下雨水才流得走。防水队要等这一步做完才能进场。" },
-    { line:"out", status:"todo", gate:true, name:"天台、露台防水 + 放水泡 48 小时", meta:"已签约 · 进场日期待定（目标 10 月底）", s:"2026-10-27", e:"2026-11-10",
-      what:"屋顶和露台刷防水，然后放水泡 48 小时，楼下房间天花板不湿才算合格。合格后马上做保护层，防水层不能露在外面给人踩。",
+  alerts: [
+    { lv:"warn", t:"<b>推拉门门框 11 月 20 日（下周五）运到并开始装：</b>外墙队大约 11 月 24 日修补完就要喷漆，门框要在开喷前装完，他们才能把门口的边收好。<b>还要问一句：</b>6 樘门框几天能装完；装不完就请外墙队先喷没有门的那几面墙。" },
+    { lv:"stop", t:"<b>春节前入住很可能赶不上：</b>现在的约定是「防水、贴砖都等外墙做完再开始」，外墙漆估计要喷到 12 月下旬，贴砖最早 1 月才开工，1 月底工人又要回家过年。<b>可以商量的办法：</b>卫生间、厨房的防水和贴砖在室内，不受外墙影响，可以和外墙同时做，只把阳台留到最后。要先和泥工确认。" },
+    { lv:"warn", t:"<b>吊顶已经先做了，后面两步要多留心：</b>① 厨房、卫生间贴墙砖时，砖要顶到吊顶下沿，接缝用收边条或防霉胶收口；② 楼上卫生间、露台、天台放水试漏时，楼下天花板已经封好，试水那两天要有人盯着楼下，一有湿印马上放水。" },
+    { lv:"warn", t:"<b>女儿墙喷漆、防水坎压顶贴砖（已定）：</b>阳台和露台的防水坎压顶，外墙队留出来不喷；等防水做完、砖贴好再收口。开喷前要和外墙队在现场把留白的分界线画出来、拍照。" },
+    { lv:"warn", t:"<b>喷漆前还有三件小事没落实：</b>一楼风管机的外墙孔打了没有、卫生间排风孔要不要扩大、窗边和空调孔的防水谁来做。漆喷完再动这些，会留下补漆色差。" }
+  ],
+  coord: [
+    { hot:true, who:"推拉门厂家", what:"阳台、露台 6 樘推拉门的门框到货并装好", when:"11 月 20 日（下周五）运到并开始装；几天装完<span class='tbd'>待确认</span>", before:"外墙开喷前，约 11 月 24 日", blocks:"外墙队喷漆、防水队进场", st:"todo", chase:"儿子问几天装完；妈妈当天收货、对高度" },
+    { who:"吊顶队", what:"吊顶完工，等验收", when:"11 月 15 日妈妈验收", before:"付尾款之前", blocks:"泥工贴砖、油漆", st:"doing", chase:"妈妈现场验收，合格再付款" },
+    { who:"外墙队", what:"修补空鼓、批抗裂砂浆、贴分格铝条", when:"约 11 月 24 日做完（估）", before:"喷漆前", blocks:"喷外墙漆", st:"doing", chase:"妈妈拍每天进度" },
+    { hot:true, who:"外墙队", what:"喷外墙漆的开工日、完工日，拆架子的日期", when:"<span class='tbd'>待确认</span>（这里先按 11 月 25 日到 12 月 25 日估）", before:"越早给越好，后面几家都按它排", blocks:"泥工、防水队、门窗厂回来装玻璃", st:"risk", chase:"儿子问外墙队负责人" },
+    { hot:true, who:"瓷砖厂家", what:"客厅、卧室大砖下单（定制，要等工厂做）", when:"最晚 11 月中下单；到货周期<span class='tbd'>待确认</span>", before:"泥工铺地砖前到货", blocks:"铺地砖", st:"risk", chase:"儿子发问价单、要工期" },
+    { who:"泥工（贴砖）", what:"定开工日；确认厨卫防水能不能不等外墙", when:"<span class='tbd'>待确认</span>", before:"现在的约定：外墙做完、露台支架拆掉之后", blocks:"橱柜量尺、油漆、入住", st:"risk", chase:"儿子和泥工商量" },
+    { who:"门窗厂", what:"回来给窗框外侧打胶，再装玻璃和窗扇", when:"外墙漆喷完后，约 12 月底（估）", before:"打胶要在拆架子之前；玻璃要在批腻子之前", blocks:"拆架子、批腻子", st:"todo", chase:"外墙漆快喷完时儿子约门窗厂" },
+    { who:"防水队", what:"天台、露台防水，放水试 48 小时", when:"进场日<span class='tbd'>待确认</span>", before:"他们要求：外墙漆喷完、室内砖贴完、推拉门框装好之后", blocks:"露台贴砖、压顶贴砖、太空能安装", st:"todo", chase:"前面三样有了日期再约" },
+    { who:"妈妈 + 儿子", what:"量 4 个卫生间外墙排风孔直径，定止逆阀，下浴霸单", when:"11 月 15 日量", before:"要扩孔就必须在外墙喷漆前", blocks:"浴霸安装", st:"risk", chase:"妈妈量、拍照；儿子下单" },
+    { who:"空调安装师傅", what:"一楼客厅风管机的外墙孔", when:"孔打了没有<span class='tbd'>待确认</span>", before:"外墙喷漆前", blocks:"喷外墙漆", st:"risk", chase:"妈妈现场看、拍照" },
+    { who:"太空能安装师傅", what:"天台主机的底座怎么做", when:"<span class='tbd'>待确认</span>", before:"天台防水之前", blocks:"天台防水", st:"risk", chase:"儿子问安装师傅" },
+    { who:"天窗厂家", what:"楼梯顶上的推拉天窗（还没找厂家）", when:"<span class='tbd'>待确认</span>", before:"天台防水之前", blocks:"天台防水收边", st:"risk", chase:"妈妈带问询单去问" },
+    { who:"橱柜厂", what:"上门量尺 → 工厂生产 30～45 天 → 安装", when:"厨房墙砖贴完当周量尺", before:"想春节能做饭，量尺越早越好", blocks:"厨房能用", st:"todo", chase:"贴厨房墙砖前一周约" }
+  ],
+  groups: [
+    { id:"wq",   name:"外墙",         who:"外墙队" },
+    { id:"tm",   name:"装推拉门",     who:"门窗厂" },
+    { id:"win",  name:"装窗",         who:"门窗厂" },
+    { id:"dd",   name:"吊顶",         who:"吊顶队" },
+    { id:"fs",   name:"防水",         who:"泥工 / 防水队" },
+    { id:"tile", name:"贴瓷砖",       who:"泥工" },
+    { id:"paint",name:"刷墙",         who:"油漆工" },
+    { id:"eq",   name:"水电、设备、柜子", who:"各家" },
+    { id:"end",  name:"收尾、入住",   who:"全家" }
+  ],
+  steps: [
+    /* ---------- 外墙 ---------- */
+    { id:"wq1", g:"wq", status:"done", name:"外墙抹灰打底", meta:"9 月 23 日完成", what:"外墙抹灰打底，已养护。" },
+    { id:"wq2", g:"wq", status:"done", name:"敲墙查空鼓", meta:"已查完", what:"敲外墙听有没有空心声，找出要修的地方。" },
+    { id:"wq3", g:"wq", status:"doing", name:"修补空鼓 + 抗裂砂浆 + 贴分格铝条", meta:"约 10 天", s:"2026-11-14", e:"2026-11-24", pre:["wq2"], pit:[2],
+      what:"把空鼓的地方凿掉重补，整面墙批一层抗裂砂浆，再在墙上的分格槽里贴铝条。",
+      mom:["修补过的地方再敲一遍，没有空心声才算。","每天拍一张进度照片。"] },
+    { id:"wq4", g:"wq", status:"risk", name:"窗边、空调孔等重点部位防水", meta:"谁来做待确认", s:"2026-11-20", e:"2026-11-24", pre:["wq3"],
+      what:"窗洞四周、空调孔、穿墙管这些最容易渗水的地方单独加强防水。要用水泥基的防水料，喷漆才粘得住。",
+      mom:["做完拍照，每个窗洞、每个孔都要拍到。"] },
+    { id:"wq5", g:"wq", status:"todo", gate:true, name:"喷外墙漆（真石漆）", meta:"起止日待外墙队确认，先按约 4 周估", s:"2026-11-25", e:"2026-12-25",
+      pre:["wq3","tm2","wq4","eq2","eq3"], pit:[8,5],
+      need:["和外墙队在现场画好留白分界线：女儿墙一起喷；阳台、露台防水坎压顶留出来不喷"],
+      what:"外墙喷漆，把窗框、门框的边包住，台风天才不会从缝里渗水。女儿墙一起喷；阳台和露台的防水坎压顶要贴砖，留出来不喷。",
+      mom:["开喷前拍留白分界线的照片。","窗框、门框贴好保护膜再喷。","下雨、墙面潮的时候不喷。"] },
+    { id:"wq6", g:"wq", status:"todo", name:"拆脚手架、露台支架", meta:"外墙漆和窗框打胶都做完之后", s:"2026-12-29", e:"2026-12-31", pre:["wq5","win2"],
+      what:"架子一拆，高处的活就都做不了了。拆之前确认外墙上的事全部做完。",
+      mom:["拆之前绕房子看一圈：孔都封好了、外墙灯和摄像头的线头留好了、窗框外侧胶打完了。"] },
+    { id:"wq7", g:"wq", status:"todo", name:"压顶留白处收口", meta:"压顶贴完砖之后 · 做法待确认", pre:["tile4"],
+      what:"防水坎压顶贴完砖后，砖和外墙漆交接的地方要收口。由谁做、怎么收，要趁外墙队还在场时问清楚。" },
+
+    /* ---------- 推拉门 ---------- */
+    { id:"tm1", g:"tm", status:"doing", name:"推拉门下单、工厂生产", meta:"10 月中下单 · 11 月 20 日运到", s:"2026-10-13", e:"2026-11-19",
+      what:"阳台、露台共 6 樘推拉门。厂家回话：门框 11 月 20 日（下周五）运到工地。" },
+    { id:"tm2", g:"tm", status:"todo", gate:true, name:"门框到货并安装", meta:"11 月 20 日运到并开工 · 几天装完待确认 · 最晚：外墙开喷前", s:"2026-11-20", e:"2026-11-24", pre:["tm1"], pit:[8],
+      need:["装之前和贴砖师傅对好高度：门框下沿照墙上的地砖高度线定"],
+      what:"先只装门框，不装玻璃门扇。门框装好，外墙漆才能把门框边一起包住；防水队也要等门框装好才进场。",
+      mom:["到货先对数量和尺寸：6 樘，逐个对洞口再装。","门框和墙之间的缝要用发泡胶填实。","露台、阳台的地面完成后要比室内低，装之前让师傅量给你看。","门框装好贴保护膜，后面还要喷漆。"] },
+    { id:"tm3", g:"tm", status:"todo", name:"装推拉门的玻璃门扇", meta:"外墙漆喷完后", s:"2026-12-29", e:"2027-01-06", pre:["wq5","tm2"],
+      what:"外墙漆喷完后，门窗厂回来把玻璃门扇装上。" },
+
+    /* ---------- 窗 ---------- */
+    { id:"win1", g:"win", status:"done", name:"窗框安装", meta:"8 月完成", what:"全屋窗框已装好，玻璃和窗扇留到外墙漆之后装。" },
+    { id:"win2", g:"win", status:"todo", name:"窗框外侧打耐候胶", meta:"外墙漆喷完后、拆架子之前", s:"2026-12-26", e:"2026-12-28", pre:["wq5"],
+      what:"门窗厂回来在窗框和外墙漆交接的地方打一圈耐候胶。楼上的窗要站在架子上打，所以必须在拆架子之前。" },
+    { id:"win3", g:"win", status:"todo", name:"装玻璃、窗扇、纱窗", meta:"打完胶之后", s:"2026-12-29", e:"2027-01-06", pre:["win2"],
+      what:"装玻璃和窗扇。房子封好窗，室内才能批腻子、刷墙。",
+      mom:["外开的窗要装防坠绳。","装完每扇窗开关试一遍，泼水看排水孔通不通。"] },
+    { id:"win4", g:"win", status:"risk", name:"楼梯顶上的推拉天窗", meta:"厂家还没定 · 必须在天台防水前定",
+      what:"楼梯顶通往天台的推拉天窗不在门窗合同里，要另找厂家。它是天台最容易漏的地方，不定下来，天台防水的收边就没法做。" },
+
+    /* ---------- 吊顶 ---------- */
+    { id:"dd1", g:"dd", status:"done", name:"全屋吊顶施工", meta:"11 月 2 日进场，已做完", s:"2026-11-02", e:"2026-11-13", pit:[1,7,10,9],
+      what:"全屋吊顶已做完。" },
+    { id:"dd2", g:"dd", status:"done", name:"和吊顶队量尺寸对账", meta:"11 月 14 日量完", s:"2026-11-14", e:"2026-11-14",
+      what:"妈妈和吊顶队一起量了实际做的面积，用来对结算。" },
+    { id:"dd3", g:"dd", status:"todo", gate:true, name:"妈妈验收吊顶 → 合格再付尾款", meta:"11 月 15 日", s:"2026-11-15", e:"2026-11-15", pre:["dd1","dd2"], pit:[9],
+      what:"验收合格才付尾款。有问题先让他们改，改完再付。",
+      mom:["卫生间：吊顶板面到楼板顶要有 25 厘米以上，用卷尺量、拍照。",
+           "卫生间浴霸的开孔是 30.5×60.5 厘米；射灯、筒灯的孔是 7.5 厘米。",
+           "厨房、卫生间有没有留检修口（至少 40×40 厘米），位置对不对着阀门和接头。",
+           "板面平不平、接缝有没有裂、边角有没有翘；窗帘盒的宽度和深度量一下。",
+           "量出来的面积和报价单对一下，按实际面积结算。"] },
+
+    /* ---------- 防水 ---------- */
+    { id:"fs1", g:"fs", status:"done", name:"天台地面做坡度", meta:"9 月 24 日完成", what:"天台地面已做成往排水口斜，排水孔已打好。" },
+    { id:"fs2", g:"fs", status:"risk", name:"天台太空能主机的底座", meta:"做法待确认 · 必须在天台防水前", pit:[6],
+      what:"底座要在防水之前做好，防水把底座一起包住。防水做完再在上面打孔就会漏。" },
+    { id:"fs3", g:"fs", status:"todo", gate:true, name:"厨房、卫生间、阳台防水 + 放水试 48 小时", meta:"泥工 · 现在约定等外墙做完、露台支架拆掉", s:"2027-01-02", e:"2027-01-09", pre:["wq6"], pit:[6,5],
+      need:["防水材料买好（墙面和地面用什么料要先定）","地漏位置和泥工在现场定死"],
+      what:"有水的房间刷防水，再放水泡 48 小时。<b>可以商量：</b>厨房和卫生间在室内，其实不用等外墙，能提前做。",
+      mom:["刷 3 遍，每遍拍照；洗澡那面墙刷到顶。",
+           "放水泡够 48 小时。<b>楼下吊顶已经封好</b>，这两天早晚都要去楼下看天花板，有湿印马上放水、拍照。",
+           "合格后地面盖一层保护，别直接踩在防水层上。"] },
+    { id:"fs4", g:"fs", status:"todo", name:"露台地面做坡度", meta:"贴砖师傅做 · 露台支架拆掉之后", s:"2027-01-02", e:"2027-01-05", pre:["wq6"],
+      what:"把露台地面做成往排水口斜。防水队要等这一步做完才能进场。" },
+    { id:"fs5", g:"fs", status:"todo", gate:true, name:"天台、露台防水 + 放水试 48 小时", meta:"防水队 · 进场日待定（多半在春节后）", pre:["wq5","tm2","tile2","fs2","win4","fs4"], pit:[6,5],
+      what:"天台和露台刷防水，放水泡 48 小时，楼下不湿才算合格。防水队要求外墙漆喷完、室内砖贴完、推拉门框装好之后才进场，怕做好了被别的工种弄坏。",
       mom:["每刷一遍拍照；材料整桶进场拍照，空桶验收前别让他们拉走。",
-           "泡水要泡够 48 小时，期间去楼下房间看天花板、墙角有没有湿印，拍照。不湿才付尾款。",
-           "防水队走之前要把保护层做好。"] },
-    { line:"in", status:"todo", gate:true, name:"厨房、卫生间、阳台防水 + 闭水 48 小时", meta:"泥工 · 预计 10 月底到 11 月初", s:"2026-10-29", e:"2026-11-05",
-      what:"有水的房间刷防水，再放水泡 48 小时检查。",
-      mom:["刷 2～3 遍，每遍颜色不一样，好数遍数。",
-           "洗澡那面墙刷到 1.8 米高，其他墙刷 30 厘米高；地漏、管子根、墙角先加强。",
-           "泡 48 小时，去楼下天花板看有没有湿。",
-           "合格后在地面盖一层保护（薄砂浆或保护膜），后面木工、油工别直接踩在防水层上。"] },
-    { line:"out", status:"todo", name:"一楼风管机外墙补孔", meta:"孔打了没有待确认 · 必须在外墙喷漆前", s:"2026-11-01", e:"2026-11-08",
-      what:"风管机的铜管和排水管要从吊顶上方穿出外墙，原来留的孔可能偏低，需要在吊顶上方补开一个孔，旧孔封好。室内机已装好，室外机等外墙做完再装，但孔必须在喷漆前打好。喷完外墙漆再打孔会留下补漆色差，还容易渗水。" },
-    { line:"out", status:"todo", name:"外墙重点部位防水", meta:"预计 11 月上旬", s:"2026-11-01", e:"2026-11-10",
-      what:"窗边、空调孔、墙缝这些容易渗水的地方单独加强防水，做完才能喷外墙漆。" },
-    { line:"out", status:"todo", name:"阳台、露台推拉门安装", meta:"工厂生产约 25 天 · 预计 11 月上旬", s:"2026-11-07", e:"2026-11-12",
-      what:"推拉门框装好，外墙漆才能把门框边一起包住。",
-      mom:["门框底下要比室内地砖低一点，装之前和贴砖师傅对一下高度。"] },
-    { line:"in", status:"todo", name:"厨卫贴墙砖", meta:"预计 11 月上中旬", s:"2026-11-06", e:"2026-11-19",
-      what:"墙砖贴到吊顶高度再往上 2～3 厘米。最下面一排先不贴，等地砖铺好再补（墙砖压住地砖，水进不去）。" },
-    { line:"out", status:"todo", name:"外墙喷真石漆", meta:"预计 11 月中到 12 月上旬", s:"2026-11-13", e:"2026-12-10",
-      what:"外墙喷涂，把窗框、门框边缘包住，台风天才不会从缝里渗水。" },
-    { line:"eq", status:"todo", name:"橱柜、柜子上门量尺寸", meta:"厨房墙砖贴完就量 · 预计 11 月下旬", s:"2026-11-20", e:"2026-11-22",
-      what:"柜子厂上门量尺寸。工厂做柜子一般要 30～45 天，越早量越早装。" },
-    { line:"in", status:"todo", name:"吊顶骨架 + 顶上的管线", meta:"木工 · 预计 11 月下旬", s:"2026-11-20", e:"2026-11-29",
-      what:"先搭吊顶的钢骨架，先不封板。同时把浴霸、排风扇、顶上的水管接头装到位；一楼客厅风管机的室内机已提前装好，这时检查铜管和排水管接好。" },
-    { line:"eq", status:"todo", name:"柜子工厂生产", meta:"约 30～45 天", s:"2026-11-23", e:"2027-01-05",
-      what:"柜子在工厂做，不占现场时间。" },
-    { line:"in", status:"todo", gate:true, name:"封吊顶前检查", meta:"预计 12 月初", wait:"要等：天台、露台防水合格", s:"2026-11-30", e:"2026-12-01",
-      what:"吊顶一封上，里面的管子就看不见了。封之前最后检查一次。",
-      mom:["水管再打一次压，30 分钟不掉。",
-           "一楼风管机的铜管充氮气保压 24 小时，压力表不掉。",
-           "空调排水管倒一桶水进去，看水是不是顺畅流走。",
-           "吊顶里面所有管子、接头拍照。",
-           "检修口要对准阀门和接头。",
-           "楼上露台、天台防水没合格之前，不封楼下的天花板。"] },
-    { line:"in", status:"todo", name:"封石膏板", meta:"预计 12 月上中旬", s:"2026-12-02", e:"2026-12-12",
-      what:"吊顶封板。厨房、卫生间用防水石膏板，并留检修口（至少 40×40 厘米）。" },
-    { line:"eq", status:"todo", name:"太空能主机安装", meta:"天台防水后 · 预计 12 月", s:"2026-12-01", e:"2026-12-15",
-      what:"主机和水箱已下单。在天台已做好的底座上安装主机和水箱，接水接电。" },
-    { line:"out", status:"todo", name:"装窗玻璃 + 打胶", meta:"外墙漆做完后 · 预计 12 月中旬", s:"2026-12-11", e:"2026-12-18",
-      what:"门窗厂回来装玻璃和窗扇，外面打胶。" },
-    { line:"in", status:"todo", name:"批腻子 + 打磨 + 刷底漆", meta:"油工 · 预计 12 月中下旬", wait:"要等：窗玻璃装好（或先用塑料膜把窗封住）", s:"2026-12-13", e:"2026-12-31",
-      what:"墙面和吊顶批腻子、打磨、刷底漆。",
-      mom:["用耐水腻子、防霉的漆。",
-           "下雨天、回南天墙面潮的时候不要刷。"] },
-    { line:"out", status:"todo", name:"拆脚手架", meta:"预计 12 月下旬", s:"2026-12-19", e:"2026-12-21",
-      what:"拆之前确认外墙上的活全做完了（孔洞封好、外墙灯位置留好），拆了再补很麻烦。" },
-    { line:"out", status:"todo", name:"化粪池 + 房子四周地面硬化", meta:"时间待定",
-      what:"先埋好化粪池和排污管，再把房子四周地面打硬。屋顶的雨水管不能接进化粪池。" },
-    { line:"in", status:"todo", name:"铺地砖 + 卫生间第二次闭水", meta:"泥工第二趟 · 预计 2027 年 1 月上中旬", s:"2027-01-01", e:"2027-01-20",
-      what:"全屋地砖、楼梯、门槛石一次铺完，补上厨卫最下面一排墙砖，最后填缝。",
-      mom:["用小锤敲砖，听有没有空心声。",
-           "卫生间、阳台地面往地漏斜：放个乒乓球会滚过去。",
-           "卫生间地砖铺完再放水泡 48 小时（第二次闭水），不漏才装马桶。"] },
-    { line:"in", status:"todo", name:"刷最后一遍面漆", meta:"预计 1 月中下旬", s:"2027-01-21", e:"2027-01-25",
-      what:"铺地砖时墙脚难免被弄脏、碰坏，所以最后一遍墙面漆放在铺砖之后刷，一起修好。" },
-    { line:"in", status:"todo", name:"装门、马桶洗手盆、灯、扶手", meta:"预计 1 月下旬", s:"2027-01-22", e:"2027-01-31",
-      what:"各家上门安装。每个开关、插座、灯、水龙头都试一遍。" },
-    { line:"eq", status:"todo", name:"装柜子、空调", meta:"预计 1 月下旬", s:"2027-01-22", e:"2027-01-31",
-      what:"柜子进场安装。一楼风管机装室外机、抽真空、装出风口，试机；二、三楼装挂机。" },
-    { line:"all", status:"todo", name:"保洁 + 通风 + 甲醛检测", meta:"通风越久越好", s:"2027-02-01", e:"2027-02-14",
-      what:"开荒保洁，开窗通风，请有资质的公司测甲醛。超标不要急着住。" },
-    { line:"all", status:"todo", milestone:true, name:"入住", meta:"目标：2027 年春节（2 月 6 日）前", s:"2027-02-06", e:"2027-02-06",
-      what:"全家回来过年。" }
+           "泡水 48 小时，<b>楼下吊顶已经封好</b>，要有人盯着楼下天花板和墙角。",
+           "不湿才付尾款。"] },
+
+    /* ---------- 贴瓷砖 ---------- */
+    { id:"tile0", g:"tile", status:"done", name:"墙上弹好地砖高度线", meta:"10 月完成", what:"泥工在墙上弹了一条线，表示地砖铺好后的高度。吊顶、门框的高度都照它算，别被盖掉。" },
+    { id:"tile1", g:"tile", status:"risk", name:"瓷砖下单、到货", meta:"大砖最晚 11 月中下单 · 到货周期待确认", s:"2026-11-14", e:"2026-11-17",
+      what:"客厅、卧室的大砖要工厂定做，下单晚了，泥工开工时砖还没到。厨房、卫生间的砖买现货，开贴前一周买就行。",
+      mom:["到货当面开箱，几箱对比颜色和批号，有色差先别贴。"] },
+    { id:"tile2", g:"tile", status:"todo", name:"厨房、卫生间贴墙砖和地砖", meta:"泥工 · 防水试水合格之后", s:"2027-01-10", e:"2027-01-24", pre:["fs3","tile1","dd3"], pit:[7,5],
+      need:["淋浴玻璃隔断的槽要在贴砖前埋好"],
+      what:"吊顶已经先做了，所以墙砖要一直贴到吊顶下沿，接缝用收边条或防霉胶收口。",
+      mom:["墙砖顶到吊顶下沿，缝要均匀，不能留大缝。",
+           "卫生间地面往地漏斜：放个乒乓球会滚过去。",
+           "用小锤敲砖，听有没有空心声。"] },
+    { id:"tile3", g:"tile", status:"todo", name:"客厅、卧室铺地砖", meta:"日期待排 · 很可能在春节后", pre:["tile1","paint1"],
+      what:"全屋地砖、楼梯、门槛石一次铺完。铺砖放在批腻子之后，砖才不会被弄花。" },
+    { id:"tile4", g:"tile", status:"todo", name:"露台贴砖 + 防水坎压顶贴砖", meta:"天台露台防水合格之后", pre:["fs5"], pit:[5,6],
+      what:"露台地面和阳台、露台的防水坎压顶贴砖。砖要贴在防水层上，不能贴在外墙漆上。" },
+
+    /* ---------- 刷墙 ---------- */
+    { id:"paint1", g:"paint", status:"todo", name:"批腻子 + 打磨 + 底漆", meta:"装好玻璃之后", s:"2027-01-07", e:"2027-01-24", pre:["win3","dd3"],
+      what:"墙面和吊顶批腻子、打磨、刷底漆。窗没封好之前不能批，雨水和潮气会让腻子发霉脱落。",
+      mom:["用耐水腻子、防霉的漆。","下雨天、回南天墙面潮的时候不要刷。"] },
+    { id:"paint2", g:"paint", status:"todo", name:"刷最后一遍面漆", meta:"铺完地砖之后", pre:["tile3"],
+      what:"铺地砖时墙脚难免被弄脏碰坏，最后一遍面漆放在铺砖之后刷。" },
+
+    /* ---------- 水电、设备、柜子 ---------- */
+    { id:"eq0", g:"eq", status:"done", name:"电线穿完、水管打压通过", meta:"10 月 20 日、21 日", what:"电线已全部穿好；水管打压一个多小时不漏。开关、插座、灯等刷完墙再装。" },
+    { id:"eq1", g:"eq", status:"done", name:"一楼客厅风管机室内机", meta:"10 月 19 日装好", what:"室内机已吊装好，室外机等外墙做完再装。" },
+    { id:"eq2", g:"eq", status:"risk", name:"一楼风管机的外墙孔", meta:"孔打了没有待确认 · 必须在喷漆前", s:"2026-11-17", e:"2026-11-24",
+      what:"风管机的铜管和排水管要从吊顶上方穿出外墙。喷完漆再打孔会留下补漆色差，还容易渗水。" },
+    { id:"eq3", g:"eq", status:"risk", name:"量卫生间排风孔直径，定浴霸配件", meta:"11 月 15 日量 · 要扩孔必须在喷漆前", s:"2026-11-15", e:"2026-11-24", pit:[9,4],
+      what:"4 个卫生间用浴霸排风，风管要接到外墙的孔。孔的直径决定买哪种止逆阀；孔太小要扩，就得赶在喷漆前。",
+      mom:["用卷尺量 4 个孔的内径，每个拍一张带卷尺的照片。"] },
+    { id:"eq4", g:"eq", status:"todo", name:"橱柜上门量尺", meta:"厨房墙砖贴完就量", pre:["tile2"], pit:[3],
+      what:"橱柜厂上门量尺。工厂做柜子要 30～45 天，越早量越早装。",
+      mom:["量尺时把油烟机型号、烟管位置告诉他们，吊柜深度要让得开烟管。"] },
+    { id:"eq5", g:"eq", status:"todo", name:"柜子工厂生产", meta:"约 30～45 天", pre:["eq4"], what:"柜子在工厂做，不占现场时间。" },
+    { id:"eq6", g:"eq", status:"todo", name:"太空能主机安装", meta:"天台防水合格之后", pre:["fs5"], what:"在天台已做好的底座上装主机和水箱。" },
+    { id:"eq7", g:"eq", status:"todo", name:"装开关、插座、灯", meta:"面漆刷完之后", pre:["paint2"], what:"刷完墙再装，免得弄脏。每个开关、插座、灯都试一遍。" },
+
+    /* ---------- 收尾 ---------- */
+    { id:"end1", g:"end", status:"todo", name:"装室内门、马桶洗手盆、柜子、空调外机", meta:"日期待排", pre:["paint2","eq5"],
+      what:"各家上门安装。卫生间地砖铺完再放水试一次，不漏才装马桶。" },
+    { id:"end2", g:"end", status:"todo", name:"化粪池 + 房子四周地面硬化", meta:"日期待排 · 拆架子之后", pre:["wq6"],
+      what:"先埋好化粪池和排污管，再把四周地面打硬。屋顶的雨水管不能接进化粪池。" },
+    { id:"end3", g:"end", status:"todo", name:"保洁 + 通风 + 甲醛检测", meta:"通风越久越好", pre:["end1"], what:"开荒保洁，开窗通风，请有资质的公司测甲醛。" },
+    { id:"end4", g:"end", status:"todo", name:"入住", meta:"原目标 2027 年春节前 · 待重新排", pre:["end3"], what:"全家回来住。" }
+  ],
+  pits: [
+    { id:1, t:"水管还没包隔音棉和阻尼片，就先封了吊顶", how:"后来只能在吊顶上割开口子，让工人伸手进去补包。", next:"吊顶封板前列一张「顶上还有什么没做」的单子，逐项打钩再封。" },
+    { id:2, t:"批抗裂砂浆前没有先刷界面剂", how:"师傅的解释是墙面本身够粗糙，不需要刷。", next:"开工前先问清每一道要不要刷、为什么，把说法记下来；修补过的地方完工后敲一遍。" },
+    { id:3, t:"吊柜深度按 35 厘米留，实际要 45 厘米", how:"烟管的孔打得太靠外，没考虑定制吊柜的深度。", next:"打烟管孔之前，先定油烟机型号和吊柜深度。", fig:"cab" },
+    { id:4, t:"以为烟道外面要装止逆阀", how:"其实不用装：我们家不和别人共用烟道。", next:"买配件前先问清楚「我们家这种情况需不需要」。" },
+    { id:5, t:"防水坎、露台阴角最该先做防水再贴砖", how:"这些地方贴砖比喷涂耐用，但要排在防水之后、喷漆时留出来不喷。", next:"喷漆前先定哪里贴砖，现场画线留白。", fig:"kerb" },
+    { id:6, t:"防水坎没有和楼板一起浇，而且只留了 12 厘米高", how:"分开浇的接缝容易渗水；12 厘米太矮，贴完砖后就更不够。", next:"下次和楼板一起浇，高度留 25 厘米以上。", fig:"kerb" },
+    { id:7, t:"贴砖和吊顶，谁先做没想清楚", how:"吊顶队催得紧，吊顶先做了。厨房、卫生间本来应该先贴墙砖，吊顶再压在砖上，现在吊顶压不住砖。", next:"厨卫：先贴墙砖（贴过吊顶高度），再吊顶。被催的时候先查「开工前检查」。", fig:"ceil" },
+    { id:8, t:"封窗、装门框和外墙漆，谁先做", how:"顺序是：先装窗框、门框 → 喷外墙漆把框边包住 → 打胶 → 最后装玻璃。", next:"任何一家说要进场，先看它前面那一步完成了没有。", fig:"frame" },
+    { id:9, t:"电动窗帘、浴霸的预留尺寸没提前给", how:"吊顶队需要窗帘盒的宽和深、浴霸的开孔大小和吊顶里面的高度。", next:"吊顶开工前，把窗帘电机、浴霸、灯的型号和开孔尺寸列成一张表交给吊顶队。" },
+    { id:10, t:"先埋好的线管挡住了窗帘盒和吊顶", how:"只能拆掉重新改线。", next:"埋管前先定窗帘盒和吊顶的位置，线管绕开走。" }
   ]
 };
 
+/* ============================================================ 图示 ============================================================ */
+const FIGS = {
+  ceil: `<svg viewBox="0 0 340 150" role="img" aria-label="厨卫墙砖和吊顶的先后">
+    <text x="85" y="14" text-anchor="middle" class="good">✓ 先贴砖，再吊顶</text>
+    <rect x="20" y="22" width="14" height="118" fill="var(--todo)"/><rect x="34" y="22" width="6" height="118" fill="var(--doing)"/>
+    <rect x="40" y="62" width="110" height="8" fill="var(--warn)"/>
+    <text x="48" y="56" class="mut">吊顶压在砖上</text><text x="48" y="100" class="mut">砖贴过吊顶高度</text>
+    <line x1="170" y1="6" x2="170" y2="146" stroke="var(--hair)"/>
+    <text x="255" y="14" text-anchor="middle" class="bad">✕ 先吊顶，后贴砖</text>
+    <rect x="190" y="22" width="14" height="118" fill="var(--todo)"/><rect x="204" y="70" width="6" height="70" fill="var(--doing)"/>
+    <rect x="204" y="62" width="116" height="8" fill="var(--warn)"/>
+    <circle cx="207" cy="70" r="7" fill="none" stroke="var(--stop)" stroke-width="2"/>
+    <text x="220" y="88" class="mut">砖只能顶到吊顶下沿</text><text x="220" y="104" class="mut">接缝靠收边条或胶</text></svg>`,
+  frame: `<svg viewBox="0 0 340 120" role="img" aria-label="门窗框和外墙漆的先后">
+    <text x="85" y="14" text-anchor="middle" class="good">✓ 先装框，再喷漆</text>
+    <rect x="20" y="30" width="70" height="60" fill="var(--todo)"/><rect x="20" y="24" width="76" height="6" fill="var(--ok)"/><rect x="90" y="24" width="6" height="30" fill="var(--ok)"/>
+    <rect x="96" y="40" width="50" height="16" fill="var(--doing)"/>
+    <text x="24" y="108" class="mut">漆包住框边，再打胶</text>
+    <line x1="170" y1="6" x2="170" y2="116" stroke="var(--hair)"/>
+    <text x="255" y="14" text-anchor="middle" class="bad">✕ 先喷漆，后装框</text>
+    <rect x="190" y="30" width="70" height="60" fill="var(--todo)"/><rect x="190" y="24" width="64" height="6" fill="var(--ok)"/>
+    <rect x="266" y="40" width="50" height="16" fill="var(--doing)"/>
+    <circle cx="261" cy="32" r="9" fill="none" stroke="var(--stop)" stroke-width="2"/>
+    <text x="194" y="108" class="mut">框边露白，补漆有色差</text></svg>`,
+  kerb: `<svg viewBox="0 0 340 130" role="img" aria-label="防水坎高度">
+    <text x="85" y="14" text-anchor="middle" class="bad">✕ 分开浇，高 12 厘米</text>
+    <rect x="20" y="100" width="130" height="14" fill="var(--todo)"/><rect x="60" y="76" width="18" height="24" fill="var(--todo)" opacity=".6"/>
+    <line x1="56" y1="100" x2="82" y2="100" stroke="var(--stop)" stroke-width="2" stroke-dasharray="3 2"/>
+    <rect x="78" y="88" width="72" height="12" fill="var(--doing)" opacity=".5"/>
+    <text x="84" y="84" class="mut">贴完砖只剩一点高</text><text x="22" y="126" class="mut">接缝容易渗</text>
+    <line x1="170" y1="6" x2="170" y2="126" stroke="var(--hair)"/>
+    <text x="255" y="14" text-anchor="middle" class="good">✓ 一起浇，高 25 厘米以上</text>
+    <path d="M190 114 V100 H230 V50 H248 V100 H320 V114 Z" fill="var(--todo)"/>
+    <path d="M248 52 V98 H320" fill="none" stroke="var(--ok)" stroke-width="3"/>
+    <rect x="252" y="86" width="68" height="12" fill="var(--doing)" opacity=".5"/>
+    <text x="256" y="76" class="mut">防水往上翻</text></svg>`,
+  cab: `<svg viewBox="0 0 340 110" role="img" aria-label="吊柜深度和烟管位置">
+    <rect x="20" y="16" width="10" height="84" fill="var(--todo)"/><text x="6" y="108" class="mut">墙</text>
+    <rect x="30" y="24" width="70" height="40" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="38" y="48" class="mut">吊柜 35</text>
+    <circle cx="112" cy="44" r="8" fill="var(--warn)"/><text x="126" y="48" class="bad">烟管孔太靠外</text>
+    <rect x="30" y="72" width="90" height="24" fill="none" stroke="var(--ok)" stroke-width="1.5" stroke-dasharray="4 3"/><text x="126" y="89" class="good">实际要 45，烟管会被挡</text></svg>`
+};
+
 /* ============================================================ 渲染 ============================================================ */
-const LINE_KEYS = ["in","out","eq"];
-const X = { in:18, out:40, eq:62 };
-const DOT_Y = 24;
-const S = DATA.stations;
-const N = S.length;
-const lineVar = l => `var(--${l})`;
-const STATUS_TEXT = { done:"已完成", doing:"正在做", todo:"还没开始", risk:"待确认" };
+const S = DATA.steps, BY = Object.fromEntries(S.map(s => [s.id, s]));
+const G = Object.fromEntries(DATA.groups.map(g => [g.id, g]));
+const PIT = Object.fromEntries(DATA.pits.map(p => [p.id, p]));
+const ST = { done:"已完成", doing:"正在做", todo:"还没开始", risk:"待确认" };
+const DAY = 86400000;
+const D = s => new Date(s + "T00:00:00");
+const md = s => { const d = D(s); return (d.getMonth() + 1) + "/" + d.getDate(); };
+const unmet = st => (st.pre || []).map(i => BY[i]).filter(p => p.status !== "done");
+const nexts = st => S.filter(x => (x.pre || []).includes(st.id));
+const rangeText = st => st.s ? (st.s === st.e ? md(st.s) : md(st.s) + "–" + md(st.e)) : "";
 
-const progress = {};
-LINE_KEYS.forEach(L => {
-  progress[L] = 0;
-  S.forEach((st, i) => {
-    if ((st.line === L || st.line === "all") && (st.status === "done" || st.status === "doing")) progress[L] = i;
-  });
-});
-
-function fmtUpdated(){
-  document.getElementById("sub").textContent = `最后更新：${DATA.updated} · 目标：${DATA.targetText}`;
-}
-
-function summary(){
-  const doing = S.filter(s => s.status === "doing").map(s => s.name);
-  document.getElementById("nowName").textContent = doing.join("；") || "—";
-  const gi = S.findIndex(s => s.gate && s.status !== "done");
-  document.getElementById("nextGate").textContent = gi >= 0 ? S[gi].name : "—";
+function header(){
+  document.getElementById("sub").textContent = `最后更新：${DATA.updated} · ${DATA.targetText}`;
+  document.getElementById("hero").innerHTML = DATA.hero.map(h =>
+    `<div class="card"><div class="k">${h.k}</div><div class="d">${h.d}</div><ul>${h.items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("");
   const done = S.filter(s => s.status === "done").length;
-  document.getElementById("progLabel").textContent = `已完成 ${done} / ${N} 步`;
-  document.getElementById("progBar").style.width = Math.round(done / N * 100) + "%";
-  document.getElementById("alerts").innerHTML =
-    DATA.alerts.map(a => `<div class="alert warn">⚠️ ${a}</div>`).join("");
+  document.getElementById("progLabel").textContent = `已完成 ${done} / ${S.length} 步`;
+  document.getElementById("progBar").style.width = Math.round(done / S.length * 100) + "%";
+  document.getElementById("alerts").innerHTML = DATA.alerts.map(a => `<div class="alert ${a.lv}">${a.t}</div>`).join("");
 }
 
-function legend(){
-  const lines = LINE_KEYS.map(L => `<span><i class="lg-line" style="background:${lineVar(L)}"></i>${DATA.lines[L].name}</span>`).join("");
-  const marks = `<span><i class="lg-dot done"></i>已完成</span><span><i class="lg-dot"></i>还没开始</span><span><i class="lg-dot gate"></i>关卡</span>`;
-  document.getElementById("legend").innerHTML = lines + marks;
-  document.getElementById("legend2").innerHTML = lines +
-    `<span><i class="lg-line" style="background:var(--muted);opacity:.4"></i>估算</span><span><i class="lg-line" style="background:var(--today);width:3px;height:14px"></i>更新日</span>`;
-}
-
-function rails(i){
-  let h = "";
-  LINE_KEYS.forEach(L => {
-    const x = X[L] - 2.5, c = lineVar(L), p = progress[L];
-    if (i > 0)     h += `<span class="rail" style="left:${x}px;top:0;height:${DOT_Y}px;background:${c};opacity:${i <= p ? 1 : .28}"></span>`;
-    if (i < N - 1) h += `<span class="rail" style="left:${x}px;top:${DOT_Y}px;bottom:0;background:${c};opacity:${i < p ? 1 : .28}"></span>`;
-  });
-  return h;
-}
-
-function dot(st){
-  if (st.line === "all") {
-    const label = st.milestone ? "终点" : (st.status === "done" ? "✓" : "");
-    return `<span class="hub ${st.status === "done" ? "" : "todo"}">${label}</span>`;
-  }
-  const cls = ["dot", st.status, st.gate ? "gate" : ""].join(" ");
-  return `<span class="${cls}" style="left:${X[st.line] - 9}px;color:${lineVar(st.line)}"></span>`;
-}
-
-function chips(st){
-  let c = "";
-  if (st.status === "doing") c += `<span class="chip doing">正在做</span>`;
-  if (st.status === "risk")  c += `<span class="chip risk">待确认</span>`;
-  if (st.gate)               c += `<span class="chip gate">◆ 关卡</span>`;
-  return c ? `<span class="chips">${c}</span>` : "";
+function coord(){
+  const head = ["谁", "要交付什么", "预计什么时候", "最晚不能晚于", "没到会卡住谁", "状态", "谁去追"];
+  document.getElementById("coord").innerHTML =
+    `<thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>` +
+    DATA.coord.map(c => `<tr class="${c.hot ? "hot" : ""}"><td class="who">${c.who}</td><td>${c.what}</td><td>${c.when}</td><td>${c.before}</td><td>${c.blocks}</td><td><span class="pill ${c.st}">${ST[c.st]}</span></td><td>${c.chase}</td></tr>`).join("") + "</tbody>";
 }
 
 function detail(st){
-  let h = `<p>${st.what || ""}</p>`;
-  if (st.wait) h += `<p class="wait">⏸ ${st.wait}</p>`;
-  if (st.mom && st.mom.length) h += `<h4>现场要看的</h4><ul>${st.mom.map(m => `<li>${m}</li>`).join("")}</ul>`;
-  const ln = st.line === "all" ? "全线" : DATA.lines[st.line].name;
-  h += `<p class="mt" style="margin-top:8px">${ln} · ${STATUS_TEXT[st.status]}</p>`;
+  const um = unmet(st), needs = st.need || [];
+  let v;
+  if (st.status === "done") v = `<div class="verdict go">这一步已经完成</div>`;
+  else if (um.length) v = `<div class="verdict no">⛔ 先别让这一家进场：还有 ${um.length} 项前置没完成</div>`;
+  else if (needs.length || st.status === "risk") v = `<div class="verdict wait">前面的工序都完成了，但还有事项要先确认</div>`;
+  else v = `<div class="verdict go">✅ 前置都完成了，可以开工</div>`;
+  let h = v + `<p><b>${st.name}</b> <span class="pill ${st.status}">${ST[st.status]}</span>${st.gate ? ` <span class="pill gate">关卡</span>` : ""}<br><small style="color:var(--muted)">${G[st.g].name} · ${G[st.g].who}${st.s ? " · " + rangeText(st) : ""} · ${st.meta || ""}</small></p><p>${st.what || ""}</p>`;
+  if ((st.pre || []).length || needs.length) {
+    h += `<h3>开工前必须完成</h3><ul class="cl">` +
+      (st.pre || []).map(i => { const p = BY[i]; return `<li class="${p.status === "done" ? "y" : "n"}">${p.name} <small>${ST[p.status]}${p.s ? " · " + rangeText(p) : ""}</small></li>`; }).join("") +
+      needs.map(n => `<li class="q">${n}</li>`).join("") + `</ul>`;
+  }
+  const nx = nexts(st);
+  if (nx.length) h += `<h3>它没做完，会卡住</h3><ul class="plain">${nx.map(n => `<li>${n.name}</li>`).join("")}</ul>`;
+  if (st.mom && st.mom.length) h += `<h3>现场要看的</h3><ul class="plain">${st.mom.map(m => `<li>${m}</li>`).join("")}</ul>`;
+  if (st.pit && st.pit.length) h += `<h3>以前踩过的坑</h3><ul class="plain">${st.pit.map(i => `<li>${PIT[i].t}。<span style="color:var(--ok)">${PIT[i].next}</span></li>`).join("")}</ul>`;
   return h;
 }
 
-function renderMap(){
-  const el = document.getElementById("map");
-  el.innerHTML = S.map((st, i) => `
-    <div class="row ${st.status}" id="st-${i}">
-      <div class="gut" aria-hidden="true">${rails(i)}${dot(st)}</div>
-      <button class="head" aria-expanded="false" aria-controls="det-${i}">
-        <div class="nm">${st.name}${chips(st)}</div>
-        <div class="mt">${st.meta || ""}${st.wait ? ` · <span class="wait">${st.wait}</span>` : ""}</div>
-      </button>
-      <div class="det" id="det-${i}" hidden>${detail(st)}</div>
-    </div>`).join("");
-  el.querySelectorAll(".head").forEach(b => b.addEventListener("click", () => {
-    const d = document.getElementById(b.getAttribute("aria-controls"));
-    const open = b.getAttribute("aria-expanded") === "true";
-    b.setAttribute("aria-expanded", String(!open));
-    d.hidden = open;
-    b.parentElement.classList.toggle("sel", !open);
-  }));
-}
-
+/* ---------------- 时间表 ---------------- */
+let zoom = null, selId = null;
+const closed = new Set();
 function renderGantt(){
-  const DAY = 86400000, W = 7;
-  const t0 = new Date("2026-10-01T00:00:00"), t1 = new Date("2027-02-21T00:00:00");
-  const days = Math.round((t1 - t0) / DAY), width = days * W;
-  const px = d => Math.round((new Date(d + "T00:00:00") - t0) / DAY) * W;
-  const rows = S.filter(s => s.s && s.e);
+  const sc = document.getElementById("gscroll");
+  const cw = sc.clientWidth; if (!cw) return;
+  const LAB = cw < 700 ? 150 : 270;
+  const t0 = D(DATA.range[0]), t1 = D(DATA.range[1]);
+  const days = Math.round((t1 - t0) / DAY);
+  const fitW = (cw - LAB - 2) / days;
+  if (zoom === null) zoom = cw >= 900 ? "fit" : "big";
+  const W = zoom === "fit" ? fitW : Math.max(13, fitW * 1.8);
+  const width = Math.round(days * W);
+  const px = d => Math.round((D(d) - t0) / DAY * W);
+  const clamp = x => Math.max(0, Math.min(width, x));
+  document.getElementById("zFit").setAttribute("aria-pressed", String(zoom === "fit"));
+  document.getElementById("zBig").setAttribute("aria-pressed", String(zoom === "big"));
 
   let months = "", lines = "";
   for (let d = new Date(t0); d < t1; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
-    const x = Math.round((d - t0) / DAY) * W;
-    const label = d.getMonth() === 0 ? `${d.getFullYear()}年1月` : `${d.getMonth() + 1}月`;
-    months += `<span class="gm" style="left:${x}px">${label}</span>`;
-    lines += `<span class="gline" style="left:${x}px;background:var(--hair)"></span>`;
+    const x = Math.round((d - t0) / DAY * W);
+    months += `<span class="gm" style="left:${x}px">${d.getMonth() === 0 ? d.getFullYear() + " 年 1 月" : (d.getMonth() + 1) + " 月"}</span>`;
+    lines += `<span class="gline m" style="left:${x}px"></span>`;
   }
   for (let d = new Date(t0); d < t1; d = new Date(d.getTime() + DAY)) {
     if (d.getDay() === 1) {
-      const x = Math.round((d - t0) / DAY) * W;
+      const x = Math.round((d - t0) / DAY * W);
       lines += `<span class="gline" style="left:${x}px"></span>`;
-      if (d.getDate() !== 1) months += `<span class="gwk" style="left:${x}px">${d.getDate()}</span>`;
+      if (d.getDate() > 3 && W >= 5) months += `<span class="gwk" style="left:${x}px">${d.getDate()}</span>`;
     }
   }
-  const tx = px(DATA.updated);
+  const tx = px(DATA.updated), cx = px(DATA.cny);
+  const marks = `<span class="gtoday" style="left:${tx}px"></span><span class="gcny" style="left:${cx}px"></span>`;
 
-  let h = `<div class="ghead"><div class="glab">步骤</div><div class="gtrack gmonths" style="width:${width}px">${months}
-    <span class="gtoday-l" style="left:${tx}px">更新日 ${DATA.updated.slice(5)}</span></div></div>`;
-  rows.forEach(st => {
-    const c = st.line === "all" ? "var(--all)" : lineVar(st.line);
-    const l = px(st.s), r = px(st.e) + W;
-    const bar = st.milestone
-      ? `<span class="gms" style="left:${l - 2}px" title="${st.name} ${st.s}"></span>`
-      : `<span class="gbar ${st.status === "done" || st.status === "doing" ? st.status : "todo"} ${st.gate ? "gate" : ""}" style="left:${l}px;width:${Math.max(r - l, W)}px;background-color:${c}" title="${st.name}：${st.s} → ${st.e}"></span>`;
-    const range = st.s.slice(5).replace("-", "/") + "～" + st.e.slice(5).replace("-", "/");
-    const tag = st.status === "doing" ? "正在做" : st.status === "risk" ? "待确认 · " + range : st.gate ? "◆ 关卡 · " + range : range;
-    h += `<div class="grow"><div class="glab">${st.name}<small>${tag}</small></div>
-      <div class="gtrack" style="width:${width}px">${lines}<span class="gtoday" style="left:${tx}px"></span>${bar}</div></div>`;
+  let h = `<div class="ghead"><div class="glab">工序（点一行看前置）</div><div class="gtrack gmonths" style="width:${width}px">${months}
+    <span class="gflag" style="left:${tx}px;color:var(--today)">今天 ${md(DATA.updated)}</span>
+    <span class="gflag" style="left:${cx}px;color:var(--warn);top:26px">春节 ${md(DATA.cny)}</span></div></div><div class="gbody" id="gbody">`;
+  DATA.groups.forEach(g => {
+    const rows = S.filter(s => s.g === g.id), dn = rows.filter(s => s.status === "done").length, open = !closed.has(g.id);
+    h += `<div class="grow ggrp" data-open="${open}"><button class="glab" data-g="${g.id}" aria-expanded="${open}"><span class="caret">▼</span>${g.name}<small>${g.who} · ${dn}/${rows.length}</small></button><div class="gtrack" style="width:${width}px"></div></div>`;
+    if (!open) return;
+    rows.forEach(st => {
+      const um = st.status !== "done" ? unmet(st) : [];
+      let bar;
+      if (st.s) {
+        const l = clamp(px(st.s)), r = clamp(px(st.e) + W), w = Math.max(r - l, 6);
+        bar = `<span class="gb ${st.status} ${st.gate ? "gate" : ""}" style="left:${l}px;width:${w}px"></span><span class="gbl" style="left:${l + w}px">${rangeText(st)}</span>`;
+      } else if (st.status === "done") {
+        bar = `<span class="gbl" style="left:4px">✓ ${st.meta}</span>`;
+      } else {
+        bar = `<span class="gtbd" style="left:${Math.min(tx + 10, width - 90)}px">日期待排</span>`;
+      }
+      const tag = st.status === "done" ? "已完成" : (um.length ? `<span class="lock">🔒 等 ${um.length} 项前置</span>` : ST[st.status]) + (st.gate ? " · 关卡" : "");
+      h += `<div class="grow step" data-id="${st.id}"><button class="glab" data-id="${st.id}" aria-expanded="false">${st.name}<small>${tag}</small></button>
+        <div class="gtrack" style="width:${width}px">${lines}${marks}${bar}</div></div>`;
+    });
   });
-  document.getElementById("gantt").innerHTML = h;
-  const done = S.filter(s => s.status === "done" && !s.s).map(s => s.name).join("、");
-  const tbd = S.filter(s => s.status !== "done" && !s.s).map(s => s.name).join("、");
-  document.getElementById("gnote").innerHTML = `已完成（不在表内）：${done}。` + (tbd ? `时间待定（不在表内）：${tbd}。` : "") + `浅色条为估算工期；左右滑动看后面月份。`;
+  h += `<svg class="garrows" id="garrows"></svg></div>`;
+  const el = document.getElementById("gantt");
+  el.style.setProperty("--lab", LAB + "px");
+  el.innerHTML = h;
+  document.getElementById("gnote").textContent = "实心条＝已有日期（除已完成的都是估算）；虚线框＝还排不出日期；红框＝关卡。" + (zoom === "big" ? "左右滑动看后面的月份。" : "");
+  el.querySelectorAll(".ggrp .glab").forEach(b => b.addEventListener("click", () => {
+    const g = b.dataset.g; closed.has(g) ? closed.delete(g) : closed.add(g); renderGantt();
+  }));
+  el.querySelectorAll(".step .glab").forEach(b => b.addEventListener("click", () => {
+    selId = selId === b.dataset.id ? null : b.dataset.id; applySel(px, W, LAB, cw);
+  }));
+  applySel(px, W, LAB, cw);
+  if (zoom === "big" && !selId) sc.scrollLeft = Math.max(0, tx - 40);
+}
+
+function applySel(px, W, LAB, cw){
+  const body = document.getElementById("gbody"), svg = document.getElementById("garrows");
+  body.querySelectorAll(".gdet").forEach(n => n.remove());
+  body.querySelectorAll(".step").forEach(r => { r.classList.remove("sel", "pre", "ok", "nxt"); r.querySelector(".glab").setAttribute("aria-expanded", "false"); });
+  svg.innerHTML = ""; body.classList.toggle("focus", !!selId);
+  if (!selId) return;
+  const st = BY[selId], row = body.querySelector(`.step[data-id="${selId}"]`);
+  if (!row) { selId = null; body.classList.remove("focus"); return; }
+  row.classList.add("sel"); row.querySelector(".glab").setAttribute("aria-expanded", "true");
+  (st.pre || []).forEach(i => { const r = body.querySelector(`.step[data-id="${i}"]`); if (r) { r.classList.add("pre"); if (BY[i].status === "done") r.classList.add("ok"); } });
+  nexts(st).forEach(n => { const r = body.querySelector(`.step[data-id="${n.id}"]`); if (r) r.classList.add("nxt"); });
+  const det = document.createElement("div");
+  det.className = "gdet"; det.innerHTML = `<div class="det" style="width:${cw}px">${detail(st)}</div>`;
+  row.after(det);
+  // 连线
+  svg.setAttribute("width", body.scrollWidth); svg.setAttribute("height", body.scrollHeight);
+  const y = id => { const r = body.querySelector(`.step[data-id="${id}"]`); return r ? r.offsetTop + 22 : null; };
+  const link = (a, b, color) => {
+    if (!a.s || !b.s) return "";
+    const y1 = y(a.id), y2 = y(b.id); if (y1 === null || y2 === null) return "";
+    const x1 = LAB + Math.max(0, px(a.e) + W), x2 = LAB + Math.max(0, px(b.s));
+    const mx = Math.max(x1 + 8, x2 - 10);
+    return `<path d="M${x1} ${y1} H${mx} V${y2} H${x2 - 1}" fill="none" stroke="${color}" stroke-width="2"/><path d="M${x2} ${y2} l-7 -4 v8 z" fill="${color}"/>`;
+  };
+  let p = "";
+  (st.pre || []).forEach(i => p += link(BY[i], st, BY[i].status === "done" ? "var(--ok)" : "var(--warn)"));
+  nexts(st).forEach(n => p += link(st, n, "var(--doing)"));
+  svg.innerHTML = p;
+}
+
+/* ---------------- 开工前检查 ---------------- */
+function check(){
+  const el = document.getElementById("picks"), out = document.getElementById("checkOut");
+  let h = "";
+  DATA.groups.forEach(g => {
+    const rows = S.filter(s => s.g === g.id && s.status !== "done");
+    if (!rows.length) return;
+    h += `<div class="pickg">${g.name}</div>` + rows.map(st => {
+      const um = unmet(st).length;
+      const p = um ? `<span class="pill stop">等 ${um} 项</span>` : (st.status === "risk" || (st.need || []).length ? `<span class="pill risk">待确认</span>` : `<span class="pill done">可开工</span>`);
+      return `<button class="pick" data-id="${st.id}" aria-pressed="false"><span>${st.name}</span>${p}</button>`;
+    }).join("");
+  });
+  el.innerHTML = h;
+  const show = id => {
+    el.querySelectorAll(".pick").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
+    out.innerHTML = detail(BY[id]);
+  };
+  el.querySelectorAll(".pick").forEach(b => b.addEventListener("click", () => {
+    show(b.dataset.id);
+    if (window.innerWidth <= 820) out.scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  show("wq5");
+}
+
+function pits(){
+  document.getElementById("pits").innerHTML = DATA.pits.map(p =>
+    `<div class="card pit"><h4><span class="no">${p.id}</span>${p.t}</h4><p>${p.how}</p>${p.fig ? `<div class="fig">${FIGS[p.fig]}</div>` : ""}<p class="next">下次：${p.next}</p></div>`).join("");
+}
+
+function legend(){
+  document.getElementById("legend").innerHTML =
+    `<span><i class="sw" style="background:var(--ok);opacity:.55"></i>已完成</span><span><i class="sw" style="background:var(--doing)"></i>正在做</span>` +
+    `<span><i class="sw" style="background:var(--warn)"></i>待确认</span><span><i class="sw" style="background:var(--todo);opacity:.55"></i>还没开始（估算）</span>` +
+    `<span><i class="sw" style="box-shadow:0 0 0 2px var(--stop);background:transparent"></i>关卡</span>` +
+    `<span><i class="sw" style="width:2px;height:14px;background:var(--today)"></i>今天</span><span><i class="sw" style="width:0;height:14px;border-left:2px dashed var(--warn)"></i>春节</span>`;
 }
 
 function tabs(){
-  const tm = document.getElementById("t-map"), tg = document.getElementById("t-gantt");
-  const vm = document.getElementById("v-map"), vg = document.getElementById("v-gantt");
-  const show = g => {
-    tm.setAttribute("aria-selected", String(!g)); tg.setAttribute("aria-selected", String(g));
-    vm.hidden = g; vg.hidden = !g;
-    if (g) {
-      const sc = document.querySelector(".gscroll");
-      const t0 = new Date("2026-10-01T00:00:00");
-      sc.scrollLeft = Math.max(0, Math.round((new Date(DATA.updated + "T00:00:00") - t0) / 86400000) * 7 - 40);
-    }
-    try { localStorage.setItem("house-tab", g ? "gantt" : "map"); } catch (e) {}
+  const btns = [...document.querySelectorAll(".tab")];
+  const show = v => {
+    btns.forEach(b => b.setAttribute("aria-selected", String(b.dataset.v === v)));
+    ["coord", "gantt", "check", "pits"].forEach(k => document.getElementById("v-" + k).hidden = k !== v);
+    if (v === "gantt") renderGantt();
+    try { localStorage.setItem("house-tab2", v); } catch (e) {}
   };
-  tm.addEventListener("click", () => show(false));
-  tg.addEventListener("click", () => show(true));
+  btns.forEach(b => b.addEventListener("click", () => show(b.dataset.v)));
   let saved = null;
-  try { saved = localStorage.getItem("house-tab"); } catch (e) {}
-  if (/view=gantt/.test(location.search) || (saved === "gantt" && !/shot/.test(location.search))) show(true);
+  try { saved = localStorage.getItem("house-tab2"); } catch (e) {}
+  const q = (location.search.match(/view=(\w+)/) || [])[1];
+  show(["coord", "gantt", "check", "pits"].includes(q) ? q : (["coord", "gantt", "check", "pits"].includes(saved) ? saved : "coord"));
+  document.getElementById("zFit").addEventListener("click", () => { zoom = "fit"; renderGantt(); });
+  document.getElementById("zBig").addEventListener("click", () => { zoom = "big"; renderGantt(); });
+  let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => { if (!document.getElementById("v-gantt").hidden) renderGantt(); }, 150); });
 }
 
-fmtUpdated(); summary(); legend(); renderMap(); renderGantt(); tabs();
+header(); coord(); legend(); check(); pits(); tabs();
 </script>
 </body>
 </html>
