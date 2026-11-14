@@ -53,6 +53,15 @@ h2.sec{font-size:15px;color:var(--muted);font-weight:700;margin:0 0 8px}
 .notes summary{cursor:pointer;padding:11px 0;font-weight:700;font-size:15.5px;color:var(--warn)}
 .notes ol{margin:0;padding:0 0 12px 22px}
 .notes li{margin:6px 0;font-size:15px;line-height:1.5}
+.flow{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.fl{border:1px solid var(--hair);border-radius:10px;padding:8px 10px;background:var(--card);display:flex;gap:8px;align-items:flex-start;min-height:62px}
+.fl .n{flex:none;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;background:var(--chip);color:var(--muted)}
+.fl .t{font-size:14.5px;font-weight:650;line-height:1.3}
+.fl .w{font-size:12px;color:var(--muted);margin-top:2px}
+.fl.done{background:var(--ok-bg);border-color:color-mix(in srgb,var(--ok) 40%,transparent)} .fl.done .n{background:var(--ok);color:#fff}
+.fl.doing{background:var(--doing-bg);border-color:var(--doing);box-shadow:0 0 0 1px var(--doing)} .fl.doing .n{background:var(--doing);color:#fff}
+.fl.todo .t{color:var(--muted);font-weight:500}
+@media (max-width:420px){.flow{grid-template-columns:1fr 1fr}}
 .prog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13.5px;color:var(--muted)}
 .bar{flex:1;height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--ok)}
@@ -168,6 +177,10 @@ section[hidden]{display:none}
   <p class="sub" id="sub"></p>
 
   <p class="now" id="now"></p>
+  <h2 class="sec" id="flowTitle"></h2>
+  <div class="bar" style="margin:0 0 10px;height:10px;flex:none"><i id="flowBar"></i></div>
+  <div class="flow" id="flow"></div>
+  <p class="hint" style="margin-top:8px">按 1、2、3 的顺序做。绿色＝做完了，蓝色＝正在做，灰色＝还没轮到。前面一格没变绿，后面一格就不该开工。</p>
   <h2 class="sec">这周谁做什么</h2>
   <div class="hero" id="hero"></div>
   <details class="notes" id="notes"></details>
@@ -228,10 +241,30 @@ section[hidden]{display:none}
    steps.pit:    相关的踩坑编号（pits 里的 id）
    ============================================================ */
 const DATA = {
-  updated: "2026-11-14",
+  updated: "2026-11-15",
   now: "现在：<b>吊顶做完了</b>，等妈妈验收；<b>外墙</b>在修补，大约 11 月 24 日开始喷漆；<b>推拉门门框</b> 11 月 20 日（周五）送到、开始装。",
   range: ["2026-11-01", "2027-02-14"],
   cny: "2027-02-06",
+  flow: [
+    { name:"主体封顶",               status:"done", when:"5 月" },
+    { name:"内外墙抹灰",             status:"done", when:"9 月" },
+    { name:"装窗框",                 ids:["win1"], when:"8 月" },
+    { name:"水电穿线、水管试压",     ids:["eq0"], when:"10 月" },
+    { name:"吊顶",                   ids:["dd1","dd2","dd3"], when:"今天验收" },
+    { name:"外墙修补、抗裂",         ids:["wq2","wq3","wq4"], when:"到 11/24 左右" },
+    { name:"装推拉门门框",           ids:["tm1","tm2"], when:"11/20 送到" },
+    { name:"喷外墙漆",               ids:["wq5"], when:"约 11 月底–12 月下旬" },
+    { name:"窗框打胶、装玻璃",       ids:["win2","win3","tm3"], when:"外墙漆之后" },
+    { name:"拆架子",                 ids:["wq6"], when:"打完胶之后" },
+    { name:"厨卫阳台防水、试水",     ids:["fs3"], when:"日期没定" },
+    { name:"厨卫贴砖",               ids:["tile2"], when:"防水试水合格后" },
+    { name:"批腻子、底漆",           ids:["paint1"], when:"装好玻璃后" },
+    { name:"铺地砖、刷面漆",         ids:["tile3","paint2"], when:"日期没定" },
+    { name:"天台露台防水、露台贴砖", ids:["fs5","tile4"], when:"日期没定" },
+    { name:"装柜子、门、洁具、灯",   ids:["eq5","eq7","end1"], when:"日期没定" },
+    { name:"化粪池、四周地面",       ids:["end2"], when:"日期没定" },
+    { name:"保洁、通风、入住",       ids:["end3","end4"], when:"日期没定" }
+  ],
   hero: [
     { who:"工地上这周有谁", items:[
       { d:"每天",        t:"外墙队修补、批砂浆、贴铝条，做到 11 月 24 日左右" },
@@ -239,20 +272,20 @@ const DATA = {
       { d:"11/24 前后",  t:"外墙队开始喷漆（门框要先装完）" } ] },
     { who:"妈妈要做（在工地）", items:[
       { d:"11/15 周日",  t:"<b>验收吊顶</b>，合格再付尾款" },
-      { d:"11/15 周日",  t:"量 4 个卫生间外墙排风孔有多大，拍照" },
       { d:"11/20 周五",  t:"收门框：数够 6 樘，装之前对好高度" },
       { d:"喷漆前",      t:"和外墙队把「不喷、留着贴砖」的地方画线、拍照" } ] },
     { who:"儿子要做（在深圳）", items:[
       { d:"这两天",      t:"<b>大砖下单</b>，问清几天到货" },
       { d:"这两天",      t:"问门窗厂：6 樘门框几天装完" },
       { d:"这两天",      t:"问外墙队：哪天开喷、哪天喷完、哪天拆架子" },
-      { d:"本周",        t:"和泥工商量：卫生间、厨房能不能先做防水、贴砖" } ] }
+      { d:"本周",        t:"和泥工商量：卫生间、厨房能不能先做防水、贴砖" },
+      { d:"本周",        t:"买浴霸和配套的止逆阀（排风孔已开好）" } ] }
   ],
   notesTitle: "要留心的 4 件事（点开看）",
   notes: [
     "<b>春节前可能住不进去。</b>现在约好防水、贴砖都等外墙做完，外墙漆估计喷到 12 月下旬。想快一点：卫生间、厨房在屋里，可以和外墙同时做，要先和泥工商量。",
     "<b>吊顶已经先做了。</b>厨房、卫生间贴墙砖要顶到吊顶下沿；楼上放水试漏那两天，要有人盯着楼下天花板。",
-    "<b>喷漆前要办完三件小事。</b>一楼风管机的外墙孔、卫生间排风孔够不够大、窗边和空调孔的防水谁来做。喷完再动会留下补漆印。",
+    "<b>喷漆前还剩一件小事。</b>窗边和空调孔的防水由谁来做，还没定。（一楼风管机的外墙孔、卫生间排风孔都已经开好了。）",
     "<b>阳台、露台防水坎的顶面不喷漆。</b>留着等防水做完再贴砖；女儿墙照常喷。"
   ],
   coord: [
@@ -264,8 +297,7 @@ const DATA = {
     { who:"泥工（贴砖）", what:"定开工日；确认厨卫防水能不能不等外墙", when:"<span class='tbd'>还没问到</span>", before:"现在的约定：外墙做完、露台支架拆掉之后", blocks:"橱柜量尺、油漆、入住", st:"risk", chase:"儿子和泥工商量" },
     { who:"门窗厂", what:"回来给窗框外侧打胶，再装玻璃和窗扇", when:"外墙漆喷完后，约 12 月底（估）", before:"打胶要在拆架子之前；玻璃要在批腻子之前", blocks:"拆架子、批腻子", st:"todo", chase:"外墙漆快喷完时儿子约门窗厂" },
     { who:"防水队", what:"天台、露台防水，放水试 48 小时", when:"进场日<span class='tbd'>还没问到</span>", before:"他们要求：外墙漆喷完、室内砖贴完、推拉门框装好之后", blocks:"露台贴砖、压顶贴砖、太空能安装", st:"todo", chase:"前面三样有了日期再约" },
-    { who:"妈妈 + 儿子", what:"量 4 个卫生间外墙排风孔直径，定止逆阀，下浴霸单", when:"11 月 15 日量", before:"要扩孔就必须在外墙喷漆前", blocks:"浴霸安装", st:"risk", chase:"妈妈量、拍照；儿子下单" },
-    { who:"空调安装师傅", what:"一楼客厅风管机的外墙孔", when:"孔打了没有<span class='tbd'>还没问到</span>", before:"外墙喷漆前", blocks:"喷外墙漆", st:"risk", chase:"妈妈现场看、拍照" },
+    { who:"儿子", what:"买浴霸和配套的止逆阀（外墙排风孔已开好）", when:"本周", before:"贴卫生间墙砖之前到货", blocks:"浴霸安装", st:"todo", chase:"儿子下单" },
     { who:"太空能安装师傅", what:"天台主机的底座怎么做", when:"<span class='tbd'>还没问到</span>", before:"天台防水之前", blocks:"天台防水", st:"risk", chase:"儿子问安装师傅" },
     { who:"天窗厂家", what:"楼梯顶上的推拉天窗（还没找厂家）", when:"<span class='tbd'>还没问到</span>", before:"天台防水之前", blocks:"天台防水收边", st:"risk", chase:"妈妈带问询单去问" },
     { who:"橱柜厂", what:"上门量尺 → 工厂生产 30～45 天 → 安装", when:"厨房墙砖贴完当周量尺", before:"想春节能做饭，量尺越早越好", blocks:"厨房能用", st:"todo", chase:"贴厨房墙砖前一周约" }
@@ -379,11 +411,10 @@ const DATA = {
     /* ---------- 水电、设备、柜子 ---------- */
     { id:"eq0", g:"eq", status:"done", name:"电线穿完、水管打压通过", meta:"10 月 20 日、21 日", what:"电线已全部穿好；水管打压一个多小时不漏。开关、插座、灯等刷完墙再装。" },
     { id:"eq1", g:"eq", status:"done", name:"一楼客厅风管机室内机", meta:"10 月 19 日装好", what:"室内机已吊装好，室外机等外墙做完再装。" },
-    { id:"eq2", g:"eq", status:"risk", name:"一楼风管机的外墙孔", meta:"孔打了没有待确认 · 必须在喷漆前", s:"2026-11-17", e:"2026-11-24",
+    { id:"eq2", g:"eq", status:"done", name:"一楼风管机的外墙孔", meta:"已打好",
       what:"风管机的铜管和排水管要从吊顶上方穿出外墙。喷完漆再打孔会留下补漆色差，还容易渗水。" },
-    { id:"eq3", g:"eq", status:"risk", name:"量卫生间排风孔直径，定浴霸配件", meta:"11 月 15 日量 · 要扩孔必须在喷漆前", s:"2026-11-15", e:"2026-11-24", pit:[9,4],
-      what:"4 个卫生间用浴霸排风，风管要接到外墙的孔。孔的直径决定买哪种止逆阀；孔太小要扩，就得赶在喷漆前。",
-      mom:["用卷尺量 4 个孔的内径，每个拍一张带卷尺的照片。"] },
+    { id:"eq3", g:"eq", status:"done", name:"卫生间外墙排风孔", meta:"4 个都开好了，够大", pit:[9,4],
+      what:"4 个卫生间用浴霸排风，风管接到外墙的孔。孔已经开好、够大，不用再扩。剩下的是儿子按孔的大小买浴霸和止逆阀。" },
     { id:"eq4", g:"eq", status:"todo", name:"橱柜上门量尺", meta:"厨房墙砖贴完就量", pre:["tile2"], pit:[3],
       what:"橱柜厂上门量尺。工厂做柜子要 30～45 天，越早量越早装。",
       mom:["量尺时把油烟机型号、烟管位置告诉他们，吊柜深度要让得开烟管。"] },
@@ -474,6 +505,16 @@ function header(){
   document.getElementById("now").innerHTML = DATA.now;
   document.getElementById("hero").innerHTML = DATA.hero.map(h =>
     `<div class="card"><div class="who">${h.who}</div><ul>${h.items.map(i => `<li><span class="dt">${i.d}</span><span>${i.t}</span></li>`).join("")}</ul></div>`).join("");
+  const fl = DATA.flow.map(f => {
+    if (f.status) return f.status;
+    const ss = f.ids.map(i => BY[i].status);
+    return ss.every(s => s === "done") ? "done" : (ss.some(s => s === "done" || s === "doing") ? "doing" : "todo");
+  });
+  const nd = fl.filter(s => s === "done").length, ni = fl.filter(s => s === "doing").length, tot = fl.length, pc = Math.round(nd / tot * 100);
+  document.getElementById("flowTitle").innerHTML = `整个装修共 ${tot} 步：做完 ${nd} 步，正在做 ${ni} 步，还剩 ${tot - nd - ni} 步没开始 · 完成 ${pc}%`;
+  document.getElementById("flowBar").style.width = pc + "%";
+  document.getElementById("flow").innerHTML = DATA.flow.map((f, i) =>
+    `<div class="fl ${fl[i]}"><span class="n">${i + 1}</span><div><div class="t">${f.name}</div><div class="w">${fl[i] === "done" ? "✓ 做完了" : fl[i] === "doing" ? "正在做 · " + f.when : f.when}</div></div></div>`).join("");
   document.getElementById("notes").innerHTML = `<summary>${DATA.notesTitle}</summary><ol>${DATA.notes.map(n => `<li>${n}</li>`).join("")}</ol>`;
 }
 
