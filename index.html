@@ -95,9 +95,13 @@ tr.hot td{background:color-mix(in srgb,var(--stop-bg) 55%,transparent)}
 .sw{width:18px;height:10px;border-radius:3px;display:inline-block}
 .btn{appearance:none;border:1px solid var(--hair);background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer}
 .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.action{border-color:var(--doing);color:var(--doing);background:var(--doing-bg)}
+.btn.action.active{background:var(--doing);color:#fff;border-color:var(--doing);box-shadow:0 0 0 2px color-mix(in srgb,var(--doing) 25%,transparent)}
+.btn.action:active{transform:translateY(1px)}
+.btn.action .mark{font-weight:800;margin-right:4px}
 .gwrap{background:var(--card);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
 .gscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.gbody{position:relative}
+.gbody{position:relative;width:var(--gwidth)}
 .grow{display:flex;align-items:stretch;min-height:44px;border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent)}
 .glab{position:sticky;left:0;z-index:5;flex:0 0 var(--lab);width:var(--lab);background:var(--card);padding:6px 8px 6px 12px;
   font:inherit;font-size:14px;line-height:1.3;border:0;border-right:1px solid var(--hair);text-align:left;color:inherit;cursor:pointer}
@@ -131,10 +135,12 @@ tr.hot td{background:color-mix(in srgb,var(--stop-bg) 55%,transparent)}
 .grow.pre .glab{box-shadow:inset 4px 0 0 var(--warn)}
 .grow.pre.ok .glab{box-shadow:inset 4px 0 0 var(--ok)}
 .grow.nxt .glab{box-shadow:inset 4px 0 0 var(--doing)}
+.grow.buychild .glab{padding-left:28px;font-size:13.5px}
+.grow.buychild .glab::before{content:"↳";position:absolute;margin-left:-17px;color:var(--doing);font-weight:700}
 .gbody.focus .grow.step:not(.sel):not(.pre):not(.nxt){opacity:.32}
 .garrows{position:absolute;top:0;left:0;pointer-events:none;z-index:4}
-.gdet{position:relative;z-index:5;border-top:1px solid var(--hair);background:color-mix(in srgb,var(--doing-bg) 45%,var(--card))}
-.gdet>div{position:sticky;left:0;padding:12px 14px 14px;font-size:15px}
+.gdet{position:relative;z-index:5;width:100%;border-top:1px solid var(--hair);background:color-mix(in srgb,var(--doing-bg) 45%,var(--card))}
+.gdet>div{position:sticky;left:0;width:var(--gviewport);max-width:100%;padding:12px 14px 14px;font-size:15px}
 .gnote{font-size:13px;color:var(--muted);padding:10px 12px;border-top:1px solid var(--hair)}
 
 /* ---- 详情 / 检查 ---- */
@@ -159,6 +165,33 @@ tr.hot td{background:color-mix(in srgb,var(--stop-bg) 55%,transparent)}
 
 /* ---- 踩坑 ---- */
 .pits{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+/* ---- 采购倒排 ---- */
+.buyintro{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 12px}
+@media (max-width:820px){.buyintro{grid-template-columns:1fr}}
+.buyintro .card{padding:12px 14px}
+.buyintro b{display:block;font-size:20px;line-height:1.25;margin-bottom:2px}
+.buyintro small{color:var(--muted);font-size:13px}
+.buyfilters{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}
+.buyfilter{appearance:none;border:1px solid var(--hair);background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:600;padding:6px 10px;border-radius:999px;cursor:pointer}
+.buyfilter[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.buytbl{min-width:1460px;table-layout:fixed;font-size:14px}
+.buytbl th,.buytbl td{padding:7px 10px;line-height:1.32;overflow-wrap:anywhere}
+.buytbl th:nth-child(1),.buytbl td:nth-child(1){width:220px}
+.buytbl th:nth-child(2),.buytbl td:nth-child(2){width:250px}
+.buytbl th:nth-child(3),.buytbl td:nth-child(3){width:220px}
+.buytbl th:nth-child(4),.buytbl td:nth-child(4){width:245px}
+.buytbl th:nth-child(5),.buytbl td:nth-child(5){width:365px}
+.buytbl th:nth-child(6),.buytbl td:nth-child(6){width:160px}
+.buytbl tr.p0 td{background:color-mix(in srgb,var(--stop-bg) 42%,transparent)}
+.buytbl tr.p1 td{background:color-mix(in srgb,var(--warn-bg) 30%,transparent)}
+.buytbl .buyname{font-weight:700}
+.buytbl td:first-child>small{display:block;color:var(--muted);font-weight:500;font-size:12px;line-height:1.25;margin-top:3px}
+.buytbl .date{white-space:normal;font-weight:650}
+.buytbl .late{color:var(--stop);font-weight:750}
+.buytbl .reason{color:var(--muted);font-size:13px}
+.buytbl .tag{display:inline-block;font-size:11px;font-weight:750;padding:1px 6px;border-radius:999px;background:var(--chip);color:var(--muted);margin-right:3px;vertical-align:1px}
+.buytbl .tag.p0{background:var(--stop-bg);color:var(--stop)} .buytbl .tag.p1{background:var(--warn-bg);color:var(--warn)} .buytbl .tag.p2{background:var(--doing-bg);color:var(--doing)} .buytbl .tag.p3{background:var(--chip);color:var(--muted)}
+.buylegend{font-size:13px;color:var(--muted);margin:8px 0 0}
 .pit h4{margin:0 0 6px;font-size:16px;line-height:1.4}
 .pit .no{color:var(--muted);font-weight:700;margin-right:6px}
 .pit p{margin:0 0 6px;font-size:14.5px}
@@ -184,11 +217,12 @@ section[hidden]{display:none}
   <h2 class="sec">这周谁做什么</h2>
   <div class="hero" id="hero"></div>
   <details class="notes" id="notes"></details>
-  <h2 class="sec">想看细一点，点下面四个按钮</h2>
+  <h2 class="sec">想看细一点，点下面五个按钮</h2>
 
   <div class="tabs" role="tablist" style="margin-top:8px">
     <button class="tab" role="tab" data-v="coord">各家安排</button>
     <button class="tab" role="tab" data-v="gantt">时间表</button>
+    <button class="tab" role="tab" data-v="buy">要买什么</button>
     <button class="tab" role="tab" data-v="check">能开工吗</button>
     <button class="tab" role="tab" data-v="pits">踩过的坑</button>
   </div>
@@ -204,12 +238,23 @@ section[hidden]{display:none}
       <div class="legend" id="legend"></div>
       <button class="btn" id="zFit">看全部</button>
       <button class="btn" id="zBig">放大</button>
+      <button class="btn action" id="gOpenAll" aria-pressed="false"><span class="mark">＋</span>全部展开</button>
+      <button class="btn action" id="gCloseAll" aria-pressed="false"><span class="mark">－</span>全部折叠</button>
     </div>
-    <p class="hint">一行是一道工序，横条是它做的那几天。<b>点一行</b>，能看到它要等谁先做完。🔒＝前面的还没做完，先别让这一家进场。</p>
+    <p class="hint">一行是一道工序，横条是它做的那几天。<b>点一行</b>，能看到它要等谁先做完。🔒＝前面的还没做完，先别让这一家进场。可用上方按钮一次展开或折叠全部工序分类，也可点分类名称单独切换。</p>
     <div class="gwrap">
       <div class="gscroll" id="gscroll"><div id="gantt"></div></div>
       <div class="gnote" id="gnote"></div>
     </div>
+  </section>
+
+  <section id="v-buy" role="tabpanel" hidden>
+    <h2>要买什么：按春节前入住倒推</h2>
+    <p class="hint">目标：2027 年 2 月 6 日春节前能住。<b>先看“必须先定”</b>，再看“何时下单”；所有日期是倒排建议，实际以施工队确认的开工日为准。</p>
+    <div class="buyintro" id="buyIntro"></div>
+    <div class="buyfilters" id="buyFilters" role="toolbar" aria-label="采购筛选"></div>
+    <div class="tblwrap"><table class="buytbl" id="buyTable"></table></div>
+    <p class="buylegend">🔴 P0＝会卡工序，先定型号/尺寸；🟠 P1＝春节前要用，按到货和安装倒排；🔵 P2＝可在 12 月或 1 月买；⚪ P3＝春节后再买，不影响入住。<br>采购口径来自项目进度文件夹内的《家电与家具采购计划》《双十一采购遗漏核查》《施工总排期与 WBS》，已排除已买或明确不做的东西。</p>
   </section>
 
   <section id="v-check" role="tabpanel" hidden>
@@ -242,8 +287,8 @@ section[hidden]{display:none}
    ============================================================ */
 const DATA = {
   updated: "2026-11-15",
-  now: "现在：<b>吊顶做完了</b>，等妈妈验收；<b>外墙</b>在修补，大约 11 月 24 日开始喷漆；<b>推拉门门框</b> 11 月 20 日（周五）送到、开始装。",
-  range: ["2026-11-01", "2027-02-14"],
+  now: "现在：<b>吊顶做完了</b>，等妈妈验收；<b>外墙</b>在修补，大约 11 月 24 日开始喷漆；<b>推拉门门框</b> 11 月 20 日（周五）送到、开始装。采购页已按 <b>2027 年春节（2 月 6 日）</b>倒排补齐。", 
+  range: ["2026-11-01", "2027-03-20"],
   cny: "2027-02-06",
   flow: [
     { name:"主体封顶",               status:"done", when:"5 月" },
@@ -256,11 +301,11 @@ const DATA = {
     { name:"喷外墙漆",               ids:["wq5"], when:"约 11 月底–12 月下旬" },
     { name:"窗框打胶、装玻璃",       ids:["win2","win3","tm3"], when:"外墙漆之后" },
     { name:"拆架子",                 ids:["wq6"], when:"打完胶之后" },
-    { name:"厨卫阳台防水、试水",     ids:["fs3"], when:"日期没定" },
-    { name:"厨卫贴砖",               ids:["tile2"], when:"防水试水合格后" },
+    { name:"厨卫防水、试水",         ids:["fs3"], when:"外墙修补接近完成后，与外墙喷漆并行" },
+    { name:"厨卫贴砖",               ids:["tile2"], when:"厨卫砖到货、防水合格后，与外墙施工并行" },
     { name:"批腻子、底漆",           ids:["paint1"], when:"装好玻璃后" },
-    { name:"铺地砖、刷面漆",         ids:["tile3","paint2"], when:"日期没定" },
-    { name:"天台露台防水、露台贴砖", ids:["fs5","tile4"], when:"日期没定" },
+    { name:"铺地砖、刷面漆",         ids:["tile3","paint2"], when:"客厅卧室砖到货、油漆条件满足后" },
+    { name:"天台露台防水、露台贴砖", ids:["fs5","tile4"], when:"外墙高处施工完成并清理后，露台砖再到场" },
     { name:"装柜子、门、洁具、灯",   ids:["eq5","eq7","end1"], when:"日期没定" },
     { name:"化粪池、四周地面",       ids:["end2"], when:"日期没定" },
     { name:"保洁、通风、入住",       ids:["end3","end4"], when:"日期没定" }
@@ -287,6 +332,30 @@ const DATA = {
     "<b>喷漆前还剩一件小事。</b>窗边和空调孔的防水由谁来做，还没定。（一楼风管机的外墙孔、卫生间排风孔都已经开好，浴霸也买了。）",
     "<b>阳台、露台防水坎的顶面不喷漆。</b>留着等防水做完再贴砖；女儿墙照常喷。"
   ],
+  buy: [
+    { p:"p0", item:"天窗供应商 + 整套天窗", qty:"3F-SK01 · 约 2500×1070", decide:"11/20 前完成比选；天窗先安装并完成周边收口，再等外墙高处施工基本完成后做天台防水", order:"确定方案后立即下单", arrive:"天窗框、泛水收口在防水进场前完成；不把防水层暴露给外墙架子和工具", why:"外墙施工有脚手架拉爆螺丝和工具落物，先做防水容易被破坏；天窗又必须先定收口", owner:"妈妈问商家，儿子拍板" },
+    { p:"p0", item:"室内门（含二层隐形门）", qty:"13 樘", decide:"11/20 前量尺、确认门洞和开启方向", order:"11/20 前交定金；生产约 30–45 天", arrive:"腻子前装门框，最晚 12/25 到货", why:"隐形门框晚了会卡油工和春节入住", owner:"儿子约厂，妈妈现场复尺" },
+    { p:"p0", item:"瓷砖：厨卫、客厅卧室、阳台露台", qty:"全屋主材大项 · 按房间核量", decide:"11/20 前完成选款、排版、用量、损耗和批次确认；定制大砖先锁单", order:"定制大砖立即下单；厨卫砖开工前 7 天到；阳台/露台砖等外墙清场、防水节点确认后下单", arrive:"客厅/卧室大砖在铺砖前到；厨卫砖在防水试水合格后到；阳台/露台砖在防水合格后到", why:"瓷砖金额大、周期长且会直接卡住防水后贴砖；不同批次可能有色差，必须一次核量、分区到货", owner:"儿子选款下单，妈妈收货验批次" },
+    { p:"p0", item:"卫生间地漏 + 防臭芯", qty:"约 15 个", decide:"贴砖前核对数量、管径和位置", order:"11/20 前买齐", arrive:"防水/贴砖前到场", why:"会嵌进砖里，后买要砸砖", owner:"儿子采购，妈妈按点位验货" },
+    { p:"p0", item:"淋浴下沉落差 / U 型槽 + 玻璃隔断", qty:"4 间卫 · 8mm 超白半高玻璃", decide:"11/20 前确定下沉做法、槽位和尺寸", order:"槽件随厨卫贴砖前买；玻璃 12 月量尺下单", arrive:"U 型槽贴砖前到场；玻璃 1/10 前到", why:"槽后打孔会破防水，玻璃需按完成面实测", owner:"儿子定做法，妈妈量尺寸" },
+    { p:"p0", item:"天窗安装与泛水收口", qty:"天窗框、泛水、密封材料", decide:"天窗方案确定后，先于天台/露台防水；外墙架子仍在时做好保护", order:"天窗厂家确认后下单并排安装", arrive:"防水队进场前完成；外墙高处施工结束后再做防水", why:"顺序是天窗先、外墙高处活基本完成、清理拉爆螺丝和工具、最后防水；避免防水层被破坏", owner:"天窗厂家 + 外墙队 + 防水队" },
+    { p:"p0", item:"厨房水槽 + 烟道止逆阀", qty:"各 1", decide:"橱柜复尺前锁水槽开孔尺寸、排烟口径", order:"11/25 前下单", arrive:"橱柜下单/贴砖前到场", why:"水槽决定台面开孔，止逆阀要在贴砖前装", owner:"儿子确认型号" },
+    { p:"p0", item:"前置过滤器", qty:"1 套", decide:"确认入户管径 DN20 / DN25", order:"11/20 前买", arrive:"独立复压前装好", why:"原水压试已过，现装必须单独复压", owner:"儿子买，师傅复压" },
+    { p:"p0", item:"吊顶/安装辅料包", qty:"角阀、软管、生料带、玻璃胶、法兰等", decide:"11/25 前按水点和洁具对表", order:"12/01 前买齐", arrive:"洁具、厨房、洗衣安装前", why:"最容易漏买，缺一件就会停安装", owner:"儿子采购" },
+    { p:"p1", item:"厨房嵌入电器", qty:"烟灶、洗碗机、冰箱、蒸烤/微波、RO", decide:"11/25 前完成型号和尺寸比选", order:"11/25–12/05 下单，要求延迟送货", arrive:"橱柜复尺前提供安装尺寸；1/05 前到", why:"型号决定柜体图纸，不能等柜子做完再选", owner:"儿子" },
+    { p:"p1", item:"浴霸止逆阀 + 镜前灯", qty:"止逆阀 4；镜前灯 4", decide:"11/20 前按墙孔实际口径配阀", order:"11/25 前买齐", arrive:"玻璃/灯具安装阶段，1/05 前到", why:"浴霸孔已开，止逆阀需匹配；镜柜送灯需核对", owner:"儿子采购，妈妈量孔" },
+    { p:"p1", item:"厨房/卫生间/天台露台防水材料与瓷砖胶", qty:"按泥工、防水队报量", decide:"厨卫可与外墙并行；天台/露台等外墙高处施工基本结束、拉爆螺丝和工具清理完成后再进场", order:"各区域开工前 7 天买齐；不要提前把天台/露台防水料摊开", arrive:"厨卫：防水队确认后到场；天台/露台：外墙基本完工、架子/拉爆螺丝清理确认后到场", why:"防水层怕被外墙施工破坏；厨卫不受外墙影响，可以先做", owner:"儿子问泥工、卓邦" },
+    { p:"p1", item:"户外灯具 + 燃气报警器 + 气瓶配件", qty:"户外灯 1 批；报警器 1；气瓶配件 1 套", decide:"11/30 前核对点位和瓶装气规格", order:"12/01–12/15 下单", arrive:"外墙漆后、厨房启用前", why:"原采购表漏列，瓶装液化气必须补齐安全配件", owner:"儿子" },
+    { p:"p1", item:"窗帘：布、轨道、电机", qty:"全屋窗帘盒约 52m；6 处电机位", decide:"12/15 前确定单双轨和颜色", order:"电机可先买；轨道待实测后定做", arrive:"1/20 前装完，春节前只装入住区域", why:"整类此前漏列，属于大项且需按盒尺寸定做", owner:"儿子比价" },
+    { p:"p1", item:"室内照明与开关面板", qty:"筒灯/射灯/灯带 + 零火面板", decide:"按已开孔 75mm、实际灯位清点", order:"12/10 前下单", arrive:"面漆完成后，1/10 前到场", why:"水电已穿线，面板和灯要等油漆后装", owner:"儿子" },
+    { p:"p1", item:"空调（剩余 9 挂 + 1 柜）", qty:"2F-HAL 柜机 + 9 台挂机", decide:"11/30 前确认国补/延迟安装规则", order:"按国补和现金流分批，最晚 12/15 定完", arrive:"油漆后分批安装，1/10 前完成入住区域", why:"孔位已埋；不必一次囤齐，保修从安装起算", owner:"儿子" },
+    { p:"p1", item:"洗烘一体机 + 电动晾衣架", qty:"洗烘 1；晾衣架 2", decide:"11/25 前确认 1F 顶棚电源是否补好", order:"12/01–12/15 下单", arrive:"厨房/洗晾区完成后，1/10 前到", why:"尺寸会影响台面，1F 电源缺口必须先闭合", owner:"儿子问师傅" },
+    { p:"p2", item:"床、床垫、床头柜、沙发、餐桌椅", qty:"先配 1F + 2F 主卧和客餐厅", decide:"12/10 前量楼梯、门洞和墙面完成尺寸", order:"12/10–12/25 下单，要求包上楼/可拆装", arrive:"1/17–1/24 进场", why:"春节要能住，但大件不能过早占工地", owner:"儿子" },
+    { p:"p2", item:"电视、路由/AP、门锁、可视对讲", qty:"入住区域优先；摄像头先按 WiFi + 12V", decide:"12/15 前按实际墙面和网络覆盖定型", order:"12/15–1/05 下单", arrive:"保洁后、1/20 前安装", why:"此前 POE/NVR 口径冲突，先按点位核对再买", owner:"儿子" },
+    { p:"p2", item:"除湿机、吸尘器、适老扶手、卫浴五金", qty:"按 1F + 2F 主卧先配", decide:"12/20 前列入住必需品", order:"12/20–1/05 下单", arrive:"1/20 前到场", why:"湛江潮湿且影响爸妈使用，非前置工序", owner:"儿子" },
+    { p:"p3", item:"其余卧室家具、露台桌椅、乒乓球台", qty:"非入住刚需", decide:"春节后再定", order:"2027/02/15 以后", arrive:"春节后", why:"不影响 1F/2F 春节入住，避免工地堆放", owner:"儿子" },
+    { p:"p3", item:"定制衣柜、院子景观、摄像头升级、露台面砖", qty:"后置范围", decide:"春节后施工范围确认", order:"2027/02/15 以后", arrive:"春节后", why:"WBS 已列为 K 区，不占春节入住关键链", owner:"儿子" }
+  ],
   coord: [
     { hot:true, who:"推拉门厂家", what:"阳台、露台 6 樘推拉门的门框到货并装好", when:"11 月 20 日（下周五）运到并开始装；几天装完<span class='tbd'>还没问到</span>", before:"外墙开喷前，约 11 月 24 日", blocks:"外墙队喷漆、防水队进场", st:"todo", chase:"儿子问几天装完；妈妈当天收货、对高度" },
     { who:"吊顶队", what:"吊顶完工，等验收", when:"11 月 15 日妈妈验收", before:"付尾款之前", blocks:"泥工贴砖、油漆", st:"doing", chase:"妈妈现场验收，合格再付款" },
@@ -301,6 +370,7 @@ const DATA = {
     { who:"橱柜厂", what:"上门量尺 → 工厂生产 30～45 天 → 安装", when:"厨房墙砖贴完当周量尺", before:"想春节能做饭，量尺越早越好", blocks:"厨房能用", st:"todo", chase:"贴厨房墙砖前一周约" }
   ],
   groups: [
+    { id:"buy",  name:"采购任务",     who:"儿子 + 女朋友" },
     { id:"wq",   name:"外墙",         who:"外墙队" },
     { id:"tm",   name:"装推拉门",     who:"门窗厂" },
     { id:"win",  name:"装窗",         who:"门窗厂" },
@@ -312,6 +382,22 @@ const DATA = {
     { id:"end",  name:"收尾、入住",   who:"全家" }
   ],
   steps: [
+    /* ---------- 采购任务：在时间表最顶部；parent 表示采购阶段下的子任务 ---------- */
+    { id:"buy1", g:"buy", status:"risk", name:"采购阶段 1：先定会卡工序的用品", meta:"11/20–11/25", s:"2026-11-15", e:"2026-11-25", what:"天窗、室内门、地漏、玻璃隔断槽、厨房水槽、前置过滤器和安装辅料。先定型号、尺寸和施工做法，避免卡防水、贴砖、橱柜和油漆。", mom:["每项都记录型号、尺寸、下单日期和最晚到场日。","买之前先看采购任务页的 P0 清单。"] },
+    { id:"buy1a", g:"buy", parent:"buy1", status:"risk", name:"天窗：定方案、先安装框体和泛水收口", meta:"防水前完成", s:"2026-11-20", e:"2026-12-05", pre:["buy1"], what:"先把天窗供应商、框体、泛水和密封收口定下来并安装。外墙架子、拉爆螺丝和工具仍可能影响天台，防水层放到外墙高处施工基本完成并清理后再做。", mom:["确认天窗与防水交接做法、泛水高度和排水方向。","确认外墙队不会再在防水面上打孔或堆料。"] },
+    { id:"buy1b", g:"buy", parent:"buy1", status:"todo", name:"室内门：13 樘量尺、交定金", meta:"11/20 前", s:"2026-11-15", e:"2026-11-20", pre:["buy1"], what:"含二层隐形门，确认门洞、开启方向、门套和生产周期。隐形门框必须赶在批腻子前安装。" },
+    { id:"buy1c", g:"buy", parent:"buy1", status:"todo", name:"瓷砖：厨卫、客厅卧室、阳台露台", meta:"先下定制大砖，现货分批到场", s:"2026-11-15", e:"2026-11-25", pre:["buy1"], what:"瓷砖是当前采购大头，必须单独管理：客厅/卧室大砖先确认款式、数量、批次和工厂周期并下单；厨房、卫生间砖按防水试水和贴砖开工倒排；阳台、露台砖及防水坎压顶砖按外墙高处施工完成、清场、防水合格后安排。", mom:["一次确认全屋用量，按房间分开核算并预留损耗和补砖量。","到货逐箱核对色号、批次、规格和破损，避免不同批次色差。"] },
+    { id:"buy1d", g:"buy", parent:"buy1", status:"todo", name:"地漏、玻璃槽、厨房水槽、安装辅料", meta:"贴砖前到场", s:"2026-11-15", e:"2026-11-25", pre:["buy1"], what:"按现场管径、排水位置和完成面逐项核对；槽件随厨卫贴砖预埋，水槽按橱柜复尺尺寸下单。" },
+    { id:"buy2", g:"buy", status:"todo", name:"采购阶段 2：春节前必须买齐的用品", meta:"11/25–12/15", s:"2026-11-25", e:"2026-12-15", pre:["buy1"], what:"厨房嵌入电器、浴霸止逆阀、镜前灯、防水材料、户外灯具、燃气报警器、窗帘、灯具开关、空调、洗烘一体机和电动晾衣架。", mom:["要求大件延迟送货，避免工地堆放。","每次收货拍外箱、型号和安装尺寸图。"] },
+    { id:"buy2a", g:"buy", parent:"buy2", status:"todo", name:"厨房电器：烟灶、洗碗机、冰箱、蒸烤、RO", meta:"橱柜复尺前", s:"2026-11-25", e:"2026-12-05", pre:["buy2"], what:"先提供完整型号和安装尺寸，再让橱柜厂复尺和出图。" },
+    { id:"buy2b", g:"buy", parent:"buy2", status:"todo", name:"防水材料、止逆阀、镜前灯、户外灯、燃气配件", meta:"各自施工前到场", s:"2026-11-25", e:"2026-12-15", pre:["buy2"], what:"厨卫防水可以与外墙施工并行；天台和露台防水必须等外墙高处施工基本完成、拉爆螺丝和工具清理后。" },
+    { id:"buy2c", g:"buy", parent:"buy2", status:"todo", name:"窗帘、灯具开关、空调、洗烘机、晾衣架", meta:"12 月分批下单", s:"2026-12-01", e:"2026-12-15", pre:["buy2"], what:"按到货和安装节点分批下单，大件要求延迟送货。" },
+    { id:"buy3", g:"buy", status:"todo", name:"采购阶段 3：入住前补齐生活用品", meta:"12/10–2027/01/20", s:"2026-12-10", e:"2027-01-20", pre:["buy2"], what:"床、床垫、床头柜、沙发、餐桌椅、电视、路由/AP、门锁、可视对讲、除湿机、吸尘器、适老扶手和卫浴五金。优先保证 1 楼和 2 楼主卧春节能住。", mom:["家具下单前量楼梯、门洞和转角净空。","大件要求可拆装、包上楼或确认不合适可退。"] },
+    { id:"buy3a", g:"buy", parent:"buy3", status:"todo", name:"床、床垫、床头柜、沙发、餐桌椅", meta:"12/10–12/25 下单", s:"2026-12-10", e:"2026-12-25", pre:["buy3"], what:"先配一楼和二楼主卧、客厅和餐厅；下单前量楼梯、门洞和转角。" },
+    { id:"buy3b", g:"buy", parent:"buy3", status:"todo", name:"电视、网络、门锁、可视对讲、除湿机等", meta:"12/15–2027/01/05", s:"2026-12-15", e:"2027-01-05", pre:["buy3"], what:"入住区域优先，摄像头按 WiFi + 12V 口径，不采购 POE/NVR。" },
+    { id:"buy4", g:"buy", status:"todo", name:"采购阶段 4：春节后再买再做", meta:"2027/02/15 以后", s:"2027-02-15", e:"2027-03-15", pre:["buy3"], what:"其余卧室家具、露台桌椅、乒乓球台、定制衣柜、院子景观、摄像头升级和露台面砖。不影响春节入住，放到后面做。", mom:["春节前只买入住刚需，不让非刚需占用预算和工地空间。"] },
+    { id:"buy4a", g:"buy", parent:"buy4", status:"todo", name:"定制衣柜、其余家具、露台和院子项目", meta:"2027/02/15 以后", s:"2027-02-15", e:"2027-03-15", pre:["buy4"], what:"春节后再量尺、比价和施工，不占春节入住关键链。" },
+
     /* ---------- 外墙 ---------- */
     { id:"wq1", g:"wq", status:"done", name:"外墙抹灰打底", meta:"9 月 23 日完成", what:"外墙抹灰打底，已养护。" },
     { id:"wq2", g:"wq", status:"done", name:"敲墙查空鼓", meta:"已查完", what:"敲外墙听有没有空心声，找出要修的地方。" },
@@ -349,8 +435,8 @@ const DATA = {
     { id:"win3", g:"win", status:"todo", name:"装玻璃、窗扇、纱窗", meta:"打完胶之后", s:"2026-12-29", e:"2027-01-06", pre:["win2"],
       what:"装玻璃和窗扇。房子封好窗，室内才能批腻子、刷墙。",
       mom:["外开的窗要装防坠绳。","装完每扇窗开关试一遍，泼水看排水孔通不通。"] },
-    { id:"win4", g:"win", status:"risk", name:"楼梯顶上的推拉天窗", meta:"厂家还没定 · 必须在天台防水前定",
-      what:"楼梯顶通往天台的推拉天窗不在门窗合同里，要另找厂家。它是天台最容易漏的地方，不定下来，天台防水的收边就没法做。" },
+    { id:"win4", g:"win", status:"risk", name:"楼梯顶上的推拉天窗：先装框和泛水，再做防水", meta:"厂家还没定 · 防水进场前必须完成",
+      what:"天窗方案必须在天台防水前锁定并先安装框体、泛水和周边收口；防水不宜先做，因为外墙升降架、拉爆螺丝和工具清理可能破坏防水层。外墙高处施工基本完成并完成清场后，再由防水队把天窗周边与天台整体做成连续防水。" }, 
 
     /* ---------- 吊顶 ---------- */
     { id:"dd1", g:"dd", status:"done", name:"全屋吊顶施工", meta:"11 月 2 日进场，已做完", s:"2026-11-02", e:"2026-11-13", pit:[1,7,10,9],
@@ -367,37 +453,37 @@ const DATA = {
 
     /* ---------- 防水 ---------- */
     { id:"fs1", g:"fs", status:"done", name:"天台地面做坡度", meta:"9 月 24 日完成", what:"天台地面已做成往排水口斜，排水孔已打好。" },
-    { id:"fs2", g:"fs", status:"risk", name:"天台太空能主机的底座", meta:"做法待确认 · 必须在天台防水前", pit:[6],
-      what:"底座要在防水之前做好，防水把底座一起包住。防水做完再在上面打孔就会漏。" },
-    { id:"fs3", g:"fs", status:"todo", gate:true, name:"厨房、卫生间、阳台防水 + 放水试 48 小时", meta:"泥工 · 现在约定等外墙做完、露台支架拆掉", s:"2027-01-02", e:"2027-01-09", pre:["wq6"], pit:[6,5],
+    { id:"fs2", g:"fs", status:"risk", name:"天台太空能主机的底座", meta:"做法待确认 · 天台防水前完成", pit:[6],
+      what:"底座和所有可能穿透防水层的节点必须先定做法；天窗先装并完成泛水收口。外墙高处施工和清场完成后，防水队再整体收口，避免防水层被拉爆螺丝或工具破坏。" },
+    { id:"fs3", g:"fs", status:"todo", gate:true, name:"厨房、卫生间防水 + 放水试 48 小时", meta:"可与外墙施工并行 · 具体日期待泥工确认", s:"2026-11-25", e:"2026-12-05", pre:["wq3","tm2"], pit:[6,5],
       need:["防水材料买好（墙面和地面用什么料要先定）","地漏位置和泥工在现场定死"],
-      what:"有水的房间刷防水，再放水泡 48 小时。<b>可以商量：</b>厨房和卫生间在室内，其实不用等外墙，能提前做。",
+      what:"厨房和卫生间在室内，可以与外墙修补、喷漆等工序并行；但防水完成后要保护好，禁止外墙工具、砂浆和杂物进入。放水泡够 48 小时，合格后再贴厨卫砖。", 
       mom:["刷 3 遍，每遍拍照；洗澡那面墙刷到顶。",
            "放水泡够 48 小时。<b>楼下吊顶已经封好</b>，这两天早晚都要去楼下看天花板，有湿印马上放水、拍照。",
            "合格后地面盖一层保护，别直接踩在防水层上。"] },
-    { id:"fs4", g:"fs", status:"todo", name:"露台地面做坡度", meta:"贴砖师傅做 · 露台支架拆掉之后", s:"2027-01-02", e:"2027-01-05", pre:["wq6"],
-      what:"把露台地面做成往排水口斜。防水队要等这一步做完才能进场。" },
-    { id:"fs5", g:"fs", status:"todo", gate:true, name:"天台、露台防水 + 放水试 48 小时", meta:"防水队 · 进场日待定（多半在春节后）", pre:["wq5","tm2","tile2","fs2","win4","fs4"], pit:[6,5],
-      what:"天台和露台刷防水，放水泡 48 小时，楼下不湿才算合格。防水队要求外墙漆喷完、室内砖贴完、推拉门框装好之后才进场，怕做好了被别的工种弄坏。",
+    { id:"fs4", g:"fs", status:"todo", name:"露台、阳台清理拉爆螺丝和工具", meta:"外墙高处施工基本完成后", s:"2026-12-26", e:"2026-12-29", pre:["wq5","tm2"],
+      what:"外墙施工会留下固定升降架子的拉爆螺丝、工具和砂浆碎屑。先由外墙队完成高处施工并清场，逐点检查面板，确认没有会刺破防水层的东西，再做露台和阳台后续。" },
+    { id:"fs5", g:"fs", status:"todo", gate:true, name:"天台、露台防水 + 放水试 48 小时", meta:"清理拉爆螺丝和工具后再进场", s:"2026-12-30", e:"2027-01-08", pre:["wq5","tm2","fs2","win4","fs4"], pit:[6,5],
+      what:"天台、露台防水要放在外墙高处施工基本完成、升降架子拆除或不再影响、拉爆螺丝和工具清理验收后。这样防水层不会被后续外墙施工破坏；防水完成后再做露台、阳台贴砖。",
       mom:["每刷一遍拍照；材料整桶进场拍照，空桶验收前别让他们拉走。",
            "泡水 48 小时，<b>楼下吊顶已经封好</b>，要有人盯着楼下天花板和墙角。",
            "不湿才付尾款。"] },
 
     /* ---------- 贴瓷砖 ---------- */
     { id:"tile0", g:"tile", status:"done", name:"墙上弹好地砖高度线", meta:"10 月完成", what:"泥工在墙上弹了一条线，表示地砖铺好后的高度。吊顶、门框的高度都照它算，别被盖掉。" },
-    { id:"tile1", g:"tile", status:"risk", name:"瓷砖下单、到货", meta:"大砖最晚 11 月中下单 · 到货周期待确认", s:"2026-11-14", e:"2026-11-17",
-      what:"客厅、卧室的大砖要工厂定做，下单晚了，泥工开工时砖还没到。厨房、卫生间的砖买现货，开贴前一周买就行。",
-      mom:["到货当面开箱，几箱对比颜色和批号，有色差先别贴。"] },
-    { id:"tile2", g:"tile", status:"todo", name:"厨房、卫生间贴墙砖和地砖", meta:"泥工 · 防水试水合格之后", s:"2027-01-10", e:"2027-01-24", pre:["fs3","tile1","dd3"], pit:[7,5],
+    { id:"tile1", g:"tile", status:"risk", name:"瓷砖采购：选款、排版、核量、分批到货", meta:"全屋主材大项 · 定制大砖先下单", s:"2026-11-15", e:"2026-11-25",
+      what:"客厅、卧室的大砖要先工厂定做；厨房、卫生间砖按防水试水和贴砖开工倒排；阳台、露台砖等外墙高处施工完成、清场和防水节点确认后再安排。不能只记“买砖”，要按房间核量、留损耗、锁同批次。",
+      mom:["一次确认全屋用量，分房间记录规格、数量、损耗和补砖量。","到货当面开箱，逐箱对比颜色、批号和破损，有色差先不要铺。"] },
+    { id:"tile2", g:"tile", status:"todo", name:"厨房、卫生间贴墙砖和地砖", meta:"防水试水合格后，可与外墙施工并行", s:"2026-12-06", e:"2026-12-20", pre:["fs3","tile1","dd3"], pit:[7,5],
       need:["淋浴玻璃隔断的槽要在贴砖前埋好"],
-      what:"吊顶已经先做了，所以墙砖要一直贴到吊顶下沿，接缝用收边条或防霉胶收口。",
+      what:"吊顶已经先做了，所以墙砖要一直贴到吊顶下沿，接缝用收边条或防霉胶收口。厨房、卫生间这部分不必等外墙全部完工，防水试水合格并做好成品保护后，可与外墙工种同时进行。", 
       mom:["墙砖顶到吊顶下沿，缝要均匀，不能留大缝。",
            "卫生间地面往地漏斜：放个乒乓球会滚过去。",
            "用小锤敲砖，听有没有空心声。"] },
     { id:"tile3", g:"tile", status:"todo", name:"客厅、卧室铺地砖", meta:"日期待排 · 很可能在春节后", pre:["tile1","paint1"],
       what:"全屋地砖、楼梯、门槛石一次铺完。铺砖放在批腻子之后，砖才不会被弄花。" },
-    { id:"tile4", g:"tile", status:"todo", name:"露台贴砖 + 防水坎压顶贴砖", meta:"天台露台防水合格之后", pre:["fs5"], pit:[5,6],
-      what:"露台地面和阳台、露台的防水坎压顶贴砖。砖要贴在防水层上，不能贴在外墙漆上。" },
+    { id:"tile4", g:"tile", status:"todo", name:"露台、阳台贴砖 + 防水坎压顶贴砖", meta:"外墙高处施工完成、清理后；天台露台防水合格之后", s:"2027-01-09", e:"2027-01-20", pre:["fs5"], pit:[5,6],
+      what:"露台和阳台部分等外墙高处施工完成、拉爆螺丝和工具清理验收、防水合格后再贴。砖要贴在防水层上，不能贴在外墙漆上；外墙喷漆前要把需要贴砖的防水坎压顶画线留白。" },
 
     /* ---------- 刷墙 ---------- */
     { id:"paint1", g:"paint", status:"todo", name:"批腻子 + 打磨 + 底漆", meta:"装好玻璃之后", s:"2027-01-07", e:"2027-01-24", pre:["win3","dd3"],
@@ -413,7 +499,7 @@ const DATA = {
       what:"风管机的铜管和排水管要从吊顶上方穿出外墙。喷完漆再打孔会留下补漆色差，还容易渗水。" },
     { id:"eq3", g:"eq", status:"done", name:"卫生间外墙排风孔", meta:"4 个都开好了，够大", pit:[9,4],
       what:"4 个卫生间用浴霸排风，风管接到外墙的孔。孔已经开好、够大，不用再扩。浴霸已经买好，吊顶上的浴霸孔也开好了。" },
-    { id:"eq4", g:"eq", status:"todo", name:"橱柜上门量尺", meta:"厨房墙砖贴完就量", pre:["tile2"], pit:[3],
+    { id:"eq4", g:"eq", status:"todo", name:"橱柜上门量尺", meta:"厨房墙砖贴完就量 · 与外墙施工并行推进", pre:["tile2"], pit:[3],
       what:"橱柜厂上门量尺。工厂做柜子要 30～45 天，越早量越早装。",
       mom:["量尺时把油烟机型号、烟管位置告诉他们，吊柜深度要让得开烟管。"] },
     { id:"eq5", g:"eq", status:"todo", name:"柜子工厂生产", meta:"约 30～45 天", pre:["eq4"], what:"柜子在工厂做，不占现场时间。" },
@@ -581,7 +667,7 @@ function renderGantt(){
     <span class="gflag" style="left:${tx}px;color:var(--today)">今天 ${md(DATA.updated)}</span>
     <span class="gflag" style="left:${cx}px;color:var(--warn);top:26px">春节 ${md(DATA.cny)}</span></div></div><div class="gbody" id="gbody">`;
   DATA.groups.forEach(g => {
-    const rows = S.filter(s => s.g === g.id), dn = rows.filter(s => s.status === "done").length, open = !closed.has(g.id);
+      const rows = S.filter(s => s.g === g.id), dn = rows.filter(s => s.status === "done").length, open = !closed.has(g.id);
     h += `<div class="grow ggrp" data-open="${open}"><button class="glab" data-g="${g.id}" aria-expanded="${open}"><span class="caret">▼</span>${g.name}<small>${g.who} · ${dn}/${rows.length}</small></button><div class="gtrack" style="width:${width}px"></div></div>`;
     if (!open) return;
     rows.forEach(st => {
@@ -596,17 +682,23 @@ function renderGantt(){
         bar = `<span class="gtbd" style="left:${Math.min(tx + 10, width - 90)}px">日期待排</span>`;
       }
       const tag = st.status === "done" ? "做完了" : (um.length ? `<span class="lock">🔒 要先等 ${um.length} 件事</span>` : ST[st.status]) + (st.gate ? " · 关卡" : "");
-      h += `<div class="grow step" data-id="${st.id}"><button class="glab" data-id="${st.id}" aria-expanded="false">${st.name}<small>${tag}</small></button>
+      h += `<div class="grow step ${st.parent ? "buychild" : ""}" data-id="${st.id}"><button class="glab" data-id="${st.id}" aria-expanded="false">${st.name}<small>${tag}</small></button>
         <div class="gtrack" style="width:${width}px">${lines}${marks}${bar}</div></div>`;
     });
   });
   h += `<svg class="garrows" id="garrows"></svg></div>`;
   const el = document.getElementById("gantt");
   el.style.setProperty("--lab", LAB + "px");
+  el.style.setProperty("--gwidth", (LAB + width) + "px");
+  el.style.setProperty("--gviewport", cw + "px");
   el.innerHTML = h;
   document.getElementById("gnote").textContent = "实心条＝已有日期（除已完成的都是估算）；虚线框＝还排不出日期；红框＝关卡。" + (zoom === "big" ? "左右滑动看后面的月份。" : "");
   el.querySelectorAll(".ggrp .glab").forEach(b => b.addEventListener("click", () => {
     const g = b.dataset.g; closed.has(g) ? closed.delete(g) : closed.add(g); renderGantt();
+    const open = document.getElementById("gOpenAll"), close = document.getElementById("gCloseAll");
+    const allOpen = DATA.groups.every(x => !closed.has(x.id)), allClosed = DATA.groups.every(x => closed.has(x.id));
+    open.classList.toggle("active", allOpen); open.setAttribute("aria-pressed", String(allOpen)); open.title = allOpen ? "当前已全部展开" : "展开全部工序分类"; open.innerHTML = `<span class="mark">${allOpen ? "✓" : "＋"}</span>${allOpen ? "已全部展开" : "全部展开"}`;
+    close.classList.toggle("active", allClosed); close.setAttribute("aria-pressed", String(allClosed)); close.title = allClosed ? "当前已全部折叠" : "折叠全部工序分类"; close.innerHTML = `<span class="mark">${allClosed ? "✓" : "－"}</span>${allClosed ? "已全部折叠" : "全部折叠"}`;
   }));
   el.querySelectorAll(".step .glab").forEach(b => b.addEventListener("click", () => {
     selId = selId === b.dataset.id ? null : b.dataset.id; applySel(px, W, LAB, cw);
@@ -627,7 +719,7 @@ function applySel(px, W, LAB, cw){
   (st.pre || []).forEach(i => { const r = body.querySelector(`.step[data-id="${i}"]`); if (r) { r.classList.add("pre"); if (BY[i].status === "done") r.classList.add("ok"); } });
   nexts(st).forEach(n => { const r = body.querySelector(`.step[data-id="${n.id}"]`); if (r) r.classList.add("nxt"); });
   const det = document.createElement("div");
-  det.className = "gdet"; det.innerHTML = `<div class="det" style="width:${cw}px">${detail(st)}</div>`;
+  det.className = "gdet"; det.innerHTML = `<div class="det">${detail(st)}</div>`;
   row.after(det);
   // 连线
   svg.setAttribute("width", body.scrollWidth); svg.setAttribute("height", body.scrollHeight);
@@ -675,6 +767,26 @@ function pits(){
     `<div class="card pit"><h4><span class="no">${p.id}</span>${p.t}</h4><p>${p.how}</p>${p.fig ? `<div class="fig">${FIGS[p.fig]}</div>` : ""}<p class="next">下次：${p.next}</p></div>`).join("");
 }
 
+/* ---------------- 采购倒排 ---------------- */
+let buyFilter = "all";
+function buy(){
+  const intro = document.getElementById("buyIntro");
+  const filters = document.getElementById("buyFilters");
+  const table = document.getElementById("buyTable");
+  const counts = DATA.buy.reduce((a, x) => { a[x.p] = (a[x.p] || 0) + 1; return a; }, {});
+  intro.innerHTML = [
+    [counts.p0 || 0, "项要先定", "会卡防水、贴砖、橱柜或门框"],
+    [counts.p1 || 0, "项春节前要买", "按到货、安装和油漆倒排"],
+    ["2/6", "春节前入住", "2027 年 2 月 6 日，2/1 留收尾缓冲"]
+  ].map(x => `<div class="card"><b>${x[0]}</b><small>${x[1]}<br>${x[2]}</small></div>`).join("");
+  const fs = [["all", "全部"], ["p0", "🔴 先定 / 会卡工序"], ["p1", "🟠 春节前必买"], ["p2", "🔵 入住前补齐"], ["p3", "⚪ 春节后再买"]];
+  filters.innerHTML = fs.map(x => `<button class="buyfilter" data-p="${x[0]}" aria-pressed="${buyFilter === x[0]}">${x[1]}</button>`).join("");
+  const rows = DATA.buy.filter(x => buyFilter === "all" || x.p === buyFilter);
+  table.innerHTML = `<thead><tr><th>用品 / 数量</th><th>先定什么</th><th>何时下单</th><th>最晚到场 / 使用</th><th>为什么现在安排</th><th>谁负责</th></tr></thead><tbody>` + rows.map(x =>
+    `<tr class="${x.p}"><td><span class="tag ${x.p}">${x.p.toUpperCase()}</span><span class="buyname">${x.item}</span><small>${x.qty}</small></td><td>${x.decide}</td><td class="date">${x.order}</td><td class="date">${x.arrive}</td><td class="reason">${x.why}</td><td>${x.owner}</td></tr>`).join("") + `</tbody>`;
+  filters.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { buyFilter = b.dataset.p; buy(); }));
+}
+
 function legend(){
   document.getElementById("legend").innerHTML =
     `<span><i class="sw" style="background:var(--ok);opacity:.55"></i>做完了</span><span><i class="sw" style="background:var(--doing)"></i>正在做</span>` +
@@ -687,21 +799,31 @@ function tabs(){
   const btns = [...document.querySelectorAll(".tab")];
   const show = v => {
     btns.forEach(b => b.setAttribute("aria-selected", String(b.dataset.v === v)));
-    ["coord", "gantt", "check", "pits"].forEach(k => document.getElementById("v-" + k).hidden = k !== v);
+    ["coord", "gantt", "buy", "check", "pits"].forEach(k => document.getElementById("v-" + k).hidden = k !== v);
     if (v === "gantt") renderGantt();
+    if (v === "buy") buy();
     try { localStorage.setItem("house-tab2", v); } catch (e) {}
   };
   btns.forEach(b => b.addEventListener("click", () => show(b.dataset.v)));
   let saved = null;
   try { saved = localStorage.getItem("house-tab2"); } catch (e) {}
   const q = (location.search.match(/view=(\w+)/) || [])[1];
-  show(["coord", "gantt", "check", "pits"].includes(q) ? q : (["coord", "gantt", "check", "pits"].includes(saved) ? saved : "coord"));
+  show(["coord", "gantt", "buy", "check", "pits"].includes(q) ? q : (["coord", "gantt", "buy", "check", "pits"].includes(saved) ? saved : "coord"));
   document.getElementById("zFit").addEventListener("click", () => { zoom = "fit"; renderGantt(); });
   document.getElementById("zBig").addEventListener("click", () => { zoom = "big"; renderGantt(); });
+  const syncGroupButtons = () => {
+    const open = document.getElementById("gOpenAll"), close = document.getElementById("gCloseAll");
+    const allOpen = DATA.groups.every(g => !closed.has(g.id)), allClosed = DATA.groups.every(g => closed.has(g.id));
+    open.classList.toggle("active", allOpen); open.setAttribute("aria-pressed", String(allOpen)); open.title = allOpen ? "当前已全部展开" : "展开全部工序分类"; open.innerHTML = `<span class="mark">${allOpen ? "✓" : "＋"}</span>${allOpen ? "已全部展开" : "全部展开"}`;
+    close.classList.toggle("active", allClosed); close.setAttribute("aria-pressed", String(allClosed)); close.title = allClosed ? "当前已全部折叠" : "折叠全部工序分类"; close.innerHTML = `<span class="mark">${allClosed ? "✓" : "－"}</span>${allClosed ? "已全部折叠" : "全部折叠"}`;
+  };
+  document.getElementById("gOpenAll").addEventListener("click", () => { closed.clear(); renderGantt(); syncGroupButtons(); });
+  document.getElementById("gCloseAll").addEventListener("click", () => { DATA.groups.forEach(g => closed.add(g.id)); selId = null; renderGantt(); syncGroupButtons(); });
+  syncGroupButtons();
   let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => { if (!document.getElementById("v-gantt").hidden) renderGantt(); }, 150); });
 }
 
-header(); coord(); legend(); check(); pits(); tabs();
+header(); coord(); legend(); check(); pits(); buy(); tabs();
 </script>
 </body>
 </html>
