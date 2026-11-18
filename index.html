@@ -49,6 +49,7 @@ h2.sec{font-size:15px;color:var(--muted);font-weight:700;margin:0 0 8px}
 .hero ul{padding-left:0}
 .hero .dt{display:inline-block;min-width:78px;margin-right:8px;font-size:13px;font-weight:700;color:var(--doing);white-space:nowrap}
 .hero li{display:flex;align-items:baseline}
+.weekplan{margin:0 0 22px}.weekplan .tblwrap{margin-top:8px}.weektbl{width:2300px;min-width:2300px;table-layout:fixed;font-size:12.5px}.weektbl th,.weektbl td{padding:4px 7px;line-height:1.18;vertical-align:top}.weektbl th:first-child,.weektbl td:first-child{width:100px;white-space:nowrap}.weektbl th:not(:first-child),.weektbl td:not(:first-child){width:150px}.weektbl th{font-size:12px;line-height:1.15;white-space:nowrap}.weektbl td ul{margin:0;padding-left:14px}.weektbl td li{margin:0;line-height:1.18;white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.weektbl .pill{font-size:10px;padding:0 4px}.weekempty{color:var(--muted)}
 .notes{margin:0 0 22px;border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warn-bg);border-radius:12px;padding:0 14px}
 .notes summary{cursor:pointer;padding:11px 0;font-weight:700;font-size:15.5px;color:var(--warn)}
 .notes ol{margin:0;padding:0 0 12px 22px}
@@ -142,6 +143,16 @@ tr.hot td{background:color-mix(in srgb,var(--stop-bg) 55%,transparent)}
 .gdet{position:relative;z-index:5;width:100%;border-top:1px solid var(--hair);background:color-mix(in srgb,var(--doing-bg) 45%,var(--card))}
 .gdet>div{position:sticky;left:0;width:var(--gviewport);max-width:100%;padding:12px 14px 14px;font-size:15px}
 .gnote{font-size:13px;color:var(--muted);padding:10px 12px;border-top:1px solid var(--hair)}
+.dayplan{margin:0 0 12px;padding:12px 14px;border:1px solid var(--hair);border-radius:12px;background:var(--card)}
+.daybar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.daybar b{font-size:15px;margin-right:4px}.daybar input{font:inherit;font-size:14px;border:1px solid var(--hair);border-radius:7px;padding:5px 8px;background:var(--card);color:var(--ink)}
+.daybar .btn{padding:5px 9px}.daysummary{font-size:13px;color:var(--muted);margin:0 0 9px}
+.daylist{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px}
+.dayitem{border:1px solid var(--hair);border-left:4px solid var(--doing);border-radius:9px;padding:9px 10px;background:var(--card)}
+.dayitem.done{border-left-color:var(--ok)}.dayitem.risk{border-left-color:var(--warn)}
+.dayitem h4{margin:0 0 3px;font-size:14.5px;line-height:1.35}.dayitem p{margin:3px 0;font-size:13px;line-height:1.4}.dayitem small{color:var(--muted)}
+.dayitem .daymeta{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0}.dayitem .tag{font-size:11.5px;padding:1px 6px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.dayempty{color:var(--muted);font-size:14px;padding:6px 0}
 
 /* ---- 详情 / 检查 ---- */
 .verdict{border-radius:10px;padding:9px 12px;font-weight:650;margin-bottom:10px;font-size:15.5px}
@@ -214,8 +225,11 @@ section[hidden]{display:none}
   <div class="bar" style="margin:0 0 10px;height:10px;flex:none"><i id="flowBar"></i></div>
   <div class="flow" id="flow"></div>
   <p class="hint" style="margin-top:8px">按 1、2、3 的顺序做。绿色＝做完了，蓝色＝正在做，灰色＝还没轮到。前面一格没变绿，后面一格就不该开工。</p>
-  <h2 class="sec">这周谁做什么</h2>
-  <div class="hero" id="hero"></div>
+  <div class="weekplan" id="weekplan">
+    <h3 style="margin-top:0">按日期看本周执行表</h3>
+    <p class="hint">纵向是日期，横向是人物；每格只写当天要做的事情。左右滑动可查看完整表格。</p>
+    <div class="tblwrap"><table class="weektbl" id="weekTable"></table></div>
+  </div>
   <details class="notes" id="notes"></details>
   <h2 class="sec">想看细一点，点下面五个按钮</h2>
 
@@ -234,6 +248,10 @@ section[hidden]{display:none}
   </section>
 
   <section id="v-gantt" role="tabpanel" hidden>
+    <div class="dayplan" id="dayplan">
+      <div class="daybar"><b>每日执行清单</b><label for="dayDate">查看日期</label><input id="dayDate" type="date"><button class="btn" id="dayPrev">前一天</button><button class="btn" id="dayToday">今天</button><button class="btn" id="dayNext">后一天</button></div>
+      <p class="daysummary" id="daySummary"></p><div class="daylist" id="dayList"></div>
+    </div>
     <div class="gbar-top">
       <div class="legend" id="legend"></div>
       <button class="btn" id="zFit">看全部</button>
@@ -286,8 +304,8 @@ section[hidden]{display:none}
    steps.pit:    相关的踩坑编号（pits 里的 id）
    ============================================================ */
 const DATA = {
-  updated: "2026-11-17",
-  now: "现在：<b>吊顶做完了</b>；<b>外墙</b>在修补；<b>推拉门门框</b> 11 月 20 日（周五）送到、开始装。厨卫贴砖前的水电、排水、防水、基层、楼梯和栏杆固定点要逐项放行。采购页已按 <b>2027 年春节（2 月 6 日）</b>倒排补齐。", 
+  updated: "2026-11-18",
+  now: "现在：<b>吊顶做完了</b>；<b>外墙</b>在修补；今天妈妈联系防水师傅做二楼阳台防水、天台防水层拉毛。两天后再砌砖封闭一楼和二楼南面排水管。厨卫贴砖前的水电、排水、防水、基层、楼梯和栏杆固定点要逐项放行。", 
   range: ["2026-11-01", "2027-03-20"],
   cny: "2027-02-06",
   flow: [
@@ -331,7 +349,7 @@ const DATA = {
     "<b>贴砖不是只看砖到了没有。</b>先查水电、地漏、排水、基层、完成面标高和排版；任何一项没闭合，那个区域先别铺。详细清单见项目进度文件夹的《贴砖前置条件与来源核查》。",
     "<b>厨房、卫生间可以和外墙并行。</b>但防水必须做完、试水合格并保护好，外墙工具、砂浆和杂物不能进入湿区。",
     "<b>楼梯扶手和阳台栏杆不一定要先装。</b>贴砖前必须先定踏步完成面、扶手底座、栏杆锚固和收口；最终成品是否后装，要看会不会穿透防水层。",
-    "<b>吊顶已经先做了。</b>厨房、卫生间贴墙砖要顶到吊顶下沿；楼上放水试漏那两天，要有人盯着楼下天花板。",
+    "<b>吊顶已经先做了。</b>厨房、卫生间贴墙砖要顶到吊顶下沿；放水试漏期间要检查本屋下一层对应顶面、墙角和管根。",
     "<b>阳台、露台不能照搬厨卫顺序。</b>要等外墙高处施工完成、拉爆螺丝和工具清理验收、防水合格后再贴砖；防水坎顶面留白，女儿墙照常喷。",
     "<b>天窗要先定方案并装框、泛水和收口。</b>外墙高处施工基本完成并清场后，再做天台/露台整体防水，不能让防水层暴露在脚手架和工具下面。"
   ],
@@ -361,6 +379,65 @@ const DATA = {
     { p:"p1", item:"洗衣机/电动晾衣架：只补缺口", qty:"洗衣机已买数量 1；晾衣架待核", decide:"11/30 前核实实物和电源", order:"只有缺口才下单", arrive:"洗晾区完成后安装", why:"洗衣机已买，不重复采购；凉霸、微波炉、气瓶配件不列采购", owner:"儿子核库存" },
     { p:"p2", item:"电视、门锁、卫浴五金和入住补充用品", qty:"按实际缺口；床/床垫/床架不列入采购", decide:"12/20 前只列春节入住真正缺口", order:"缺什么再买，不设整包采购", arrive:"保洁后、1/20 前安装", why:"已明确床无需购买，取消泛化入住大包", owner:"儿子核缺口" },
     { p:"p3", item:"庭院瓷砖（最后再买）", qty:"庭院面积、排水和铺法待最后复尺", decide:"春节前不定；庭院方案、找坡和边界完成后再选", order:"春节后按现场尺寸、排水和整体景观最后采购", arrive:"庭院基层和排水条件具备后送场", why:"庭院不是春节入住关键路径，最后买可避免尺寸、排水和景观方案变化导致囤错砖", owner:"儿子+妈妈" }
+  ],
+  /* ---------- 每日执行清单：一行只做一件事 ---------- */
+  dayPlan: [
+    {d:"2026-11-18", area:"现场准备", name:"逐间登记 4 间卫生间现状", owner:"妈妈 + 水电师傅", pre:"吊顶验收记录齐全", output:"每间卫生间的水管、排水、地漏、管根照片和问题清单", gate:false, tip:"先拍全景，再拍管根、地漏、烟道和墙地交接；发现渗漏或松动立即停在回填前"},
+    {d:"2026-11-18", area:"外墙", name:"确认外墙修补区已完成并逐点复敲", owner:"妈妈 + 外墙队", pre:"修补区已干燥", output:"空鼓复敲照片；不合格点位返修单", gate:true, tip:"没有空鼓声、砂浆不松动才允许进入喷漆准备"},
+    {d:"2026-11-19", area:"水电", name:"逐路复核给水管并做打压测试", owner:"水电师傅 + 妈妈", pre:"管路可加压、阀门和堵头齐全", output:"压力表起止读数、开始/结束时间、现场照片", gate:true, tip:"压力下降或接头渗水时，不得确定回填方案；先维修后重新测试"},
+    {d:"2026-11-19", area:"水电", name:"逐间做排水通水和地漏通球", owner:"水电师傅", pre:"排水口可操作", output:"每间排水视频；堵塞、倒坡和漏水问题清单", gate:true, tip:"通水顺畅、地漏不积水，才能进入回填"},
+    {d:"2026-11-20", area:"回填", name:"确定每间卫生间回填标高和回填做法", owner:"儿子 + 泥工 + 水电师傅", pre:"打压通过、排水通畅、地漏位置已定", output:"4 间卫生间回填剖面和完成面标高照片/文字确认", gate:true, tip:"写清回填厚度、轻质/陶粒或其他材料、管道保护方式，不能只口头确认"},
+    {d:"2026-11-20", area:"推拉门", name:"清点 6 樘门框并核对洞口、下沿标高", owner:"妈妈 + 门窗厂", pre:"门框到货", output:"数量、尺寸、方向、下沿标高记录", gate:true, tip:"先验货后安装；门框下沿必须和地砖完成面线对齐"},
+    {d:"2026-11-21", area:"回填", name:"验收回填材料和管道保护措施", owner:"妈妈 + 泥工", pre:"回填方案已确认", output:"材料照片、管道包覆/支撑照片、签字记录", gate:true, tip:"材料不符合方案或管道悬空、被硬物直接压住时不得回填"},
+    {d:"2026-11-21", area:"推拉门", name:"完成推拉门门框安装并贴保护膜", owner:"门窗厂 + 妈妈", pre:"洞口复尺完成", output:"6 樘门框固定、垂直度、发泡胶和保护膜照片", gate:true, tip:"门框固定和收口合格后，才让外墙漆包框施工"},
+    {d:"2026-11-22", area:"回填", name:"完成卫生间第一间回填施工", owner:"泥工", pre:"回填材料和管道保护验收通过", output:"分层回填照片、该间完成标高记录", gate:false, tip:"按已确认方案分层施工，不得一次倒满压管"},
+    {d:"2026-11-23", area:"回填", name:"完成其余卫生间回填施工", owner:"泥工", pre:"第一间回填无异常", output:"其余 3 间分层回填照片和标高记录", gate:false, tip:"每间单独记录，不能用一张照片代替四间"},
+    {d:"2026-11-24", area:"回填", name:"验收 4 间回填并确认无管道损伤", owner:"妈妈 + 水电师傅 + 泥工", pre:"4 间回填完成", output:"回填验收表、地漏/管根照片、问题整改清单", gate:true, tip:"发现沉陷、管道位移、地漏堵塞，先整改再找平"},
+    {d:"2026-11-25", area:"找平", name:"完成卫生间找平并做地漏找坡", owner:"泥工", pre:"回填验收通过", output:"找平层厚度、地漏坡向和完成面照片", gate:false, tip:"地面向地漏连续找坡，门口不得形成反坡"},
+    {d:"2026-11-26", area:"基层", name:"检查找平层并开始基层养护", owner:"妈妈 + 泥工", pre:"找平完成", output:"平整度、起砂、空鼓检查照片；养护开始时间", gate:true, tip:"基层起砂、开裂、积水或未达到施工方要求时，不得刷防水"},
+    {d:"2026-11-27", area:"防水", name:"清理基层并处理管根、阴阳角", owner:"防水队 + 妈妈", pre:"基层养护达到要求", output:"清理完成照片、管根和阴阳角处理照片", gate:true, tip:"灰尘、油污、松散层清理干净；阴角做圆弧或按方案处理"},
+    {d:"2026-11-28", area:"防水", name:"施工管根和阴阳角附加层", owner:"防水队", pre:"基层清理验收通过", output:"每个管根、地漏、阴阳角附加层照片", gate:true, tip:"附加层未覆盖完整或未干透，不得刷大面"},
+    {d:"2026-11-29", area:"防水", name:"完成厨房、卫生间防水第一遍", owner:"防水队", pre:"附加层干燥", output:"第一遍厚度/范围照片和材料批次照片", gate:false, tip:"墙面按方案上翻，淋浴区和管根不能漏刷"},
+    {d:"2026-11-30", area:"防水", name:"完成厨房、卫生间防水第二遍", owner:"防水队", pre:"第一遍达到重涂条件", output:"第二遍交叉涂刷照片", gate:false, tip:"不能为了赶工在第一遍未干时叠涂"},
+    {d:"2026-12-01", area:"防水", name:"完成厨房、卫生间防水第三遍并检查薄弱点", owner:"防水队 + 妈妈", pre:"第二遍干燥", output:"第三遍及门口、地漏、管根、墙角照片", gate:true, tip:"漏刷、起泡、开裂、厚薄不均要当天修补"},
+    {d:"2026-12-02", area:"防水试验", name:"封堵地漏并开始 48 小时闭水", owner:"泥工 + 妈妈", pre:"三遍防水外观验收通过", output:"闭水开始时间、水位线、各房间照片", gate:true, tip:"水位线要可观察，期间检查本屋下一层对应顶面、墙角和管根"},
+    {d:"2026-12-03", area:"防水试验", name:"检查闭水期间室内墙角、门口和楼板底部", owner:"妈妈", pre:"闭水进行中", output:"室内各检查点照片和结果记录", gate:true, tip:"这是自建房，重点检查本屋下一层对应顶面、墙角和管根；有湿印、滴水或水位明显下降立即停水整改"},
+    {d:"2026-12-04", area:"防水放行", name:"完成闭水 48 小时验收并形成放行记录", owner:"妈妈 + 泥工", pre:"室内对应部位无渗漏、闭水时间足够", output:"闭水结束、水位、对应顶面和墙角照片及记录", gate:true, tip:"未通过不得贴砖；通过后立即安排保护，不能裸露防水层"},
+    {d:"2026-12-05", area:"防水保护", name:"施工防水保护层并设置湿区通道", owner:"泥工", pre:"闭水验收通过", output:"保护层厚度和通道保护照片", gate:true, tip:"工具和砂浆不得直接拖过防水层，保护层完成后才算厨卫贴砖放行"},
+    {d:"2026-12-06", area:"贴砖放行", name:"逐间核对瓷砖、排版、地漏和完成面标高", owner:"泥工 + 儿子 + 妈妈", pre:"防水保护完成、瓷砖到场", output:"每间排版图/起铺点/地漏收口照片", gate:true, tip:"墙砖、地砖、收边、石基、门框和吊顶下沿一次核对"},
+    {d:"2026-12-07", area:"厨房贴砖", name:"完成厨房墙砖第一面并检查垂直度", owner:"泥工", pre:"厨房区域放行", output:"墙砖平整度、缝宽、阴阳角照片", gate:false, tip:"厨房墙面使用亮面砖，砖缝和吊顶下沿收口先做样板"},
+    {d:"2026-12-08", area:"厨房贴砖", name:"完成厨房墙砖并清理砖面", owner:"泥工", pre:"第一面样板验收通过", output:"厨房墙砖完成照片、烟道和插座收口照片", gate:true, tip:"烟道、插座、橱柜位置不得被砖面遮挡"},
+    {d:"2026-12-09", area:"浴室贴砖", name:"完成第一间浴室墙砖", owner:"泥工", pre:"浴室逐间放行", output:"墙砖垂直度、排版、管口收口照片", gate:false, tip:"墙砖先行，淋浴区墙面贴到吊顶下沿"},
+    {d:"2026-12-10", area:"浴室贴砖", name:"完成其余浴室墙砖", owner:"泥工", pre:"第一间浴室墙砖样板通过", output:"各浴室墙砖照片和问题清单", gate:false, tip:"每间单独检查，不用一间合格代替全部合格"},
+    {d:"2026-12-11", area:"浴室贴砖", name:"完成浴室地砖并复核地漏排水", owner:"泥工 + 妈妈", pre:"墙砖和地漏收口完成", output:"地砖坡度、地漏排水视频", gate:true, tip:"放水后不积水，地漏周边不得出现反坡"},
+    {d:"2026-12-12", area:"楼梯", name:"复核楼梯踏步完成面和扶手底座定位", owner:"泥工 + 铁工", pre:"楼梯砖和扶手固定方式已定", output:"踏步高度、鼻口、防滑边、底座定位照片", gate:true, tip:"扶手不一定现在装，但底座位置不能贴完砖再打孔"},
+    {d:"2026-12-13", area:"楼梯", name:"完成楼梯踏步砖和立面砖样板", owner:"泥工 + 妈妈", pre:"楼梯放行检查通过", output:"样板确认照片、踏步高度记录", gate:true, tip:"样板通过后再连续施工，避免整跑返工"},
+    {d:"2026-12-14", area:"楼梯", name:"完成第一跑楼梯贴砖", owner:"泥工", pre:"楼梯样板通过", output:"第一跑踏步、立面和收边照片", gate:false, tip:"上下通行要留安全通道，成品砖不得被搬料磕碰"},
+    {d:"2026-12-15", area:"楼梯", name:"完成其余楼梯贴砖并保护踏步", owner:"泥工", pre:"第一跑无空鼓、尺寸合格", output:"其余楼梯照片和保护板照片", gate:true, tip:"保护板固定后再让其他工种通行"},
+    {d:"2026-12-16", area:"外墙清场", name:"逐个检查露台、阳台并清理拉爆螺丝和砂浆", owner:"外墙队 + 妈妈", pre:"外墙高处施工结束", output:"清场前后对照照片、遗留物清单", gate:true, tip:"能刺破防水层的拉爆螺丝、铁丝、砂浆块必须全部清走"},
+    {d:"2026-12-17", area:"外墙验收", name:"验收外墙喷漆、门窗外侧收口和拆架条件", owner:"儿子 + 妈妈 + 外墙队", pre:"清场完成、门窗框收口完成", output:"外墙四面照片、拆架放行记录", gate:true, tip:"拆架前确认高处打胶、套管、灯线和摄像头线头都完成"},
+    {d:"2026-12-18", area:"天窗", name:"完成天窗框体、泛水和周边收口复核", owner:"天窗厂家 + 防水队", pre:"天窗方案和洞口尺寸确认", output:"框体固定、泛水搭接、周边收口照片", gate:true, tip:"天窗先完成，之后才能做天台/露台整体防水"},
+    {d:"2026-12-19", area:"屋面防水", name:"清理天台、露台基层并验收防水施工面", owner:"防水队 + 妈妈", pre:"外墙清场和天窗收口完成", output:"基层清洁、阴角、落水口、门口收口照片", gate:true, tip:"防水面上不得留拉爆螺丝、砂浆、尖锐工具或杂物"},
+    {d:"2026-12-20", area:"屋面防水", name:"完成天台、露台防水第一遍", owner:"防水队", pre:"施工面放行", output:"材料批次和第一遍施工照片", gate:false, tip:"防水上翻、落水口和门槛节点必须连续"},
+    {d:"2026-12-21", area:"屋面防水", name:"完成天台、露台防水第二遍", owner:"防水队", pre:"第一遍达到重涂条件", output:"第二遍交叉涂刷照片", gate:false, tip:"防水队施工期间禁止其他工种交叉踩踏"},
+    {d:"2026-12-22", area:"屋面防水", name:"完成天台、露台防水节点补强", owner:"防水队 + 妈妈", pre:"第二遍完成", output:"天窗、地漏、门槛、阴角节点照片", gate:true, tip:"节点不合格当天修补，不把问题留到蓄水后"},
+    {d:"2026-12-23", area:"屋面试验", name:"开始天台、露台 48 小时蓄水试验", owner:"防水队 + 妈妈", pre:"防水外观验收通过", output:"蓄水水位线、开始时间及本屋对应部位照片", gate:true, tip:"这是自建房，不涉及外部住户查验；检查本屋下一层对应顶面、墙角和管根，记录水位变化"},
+    {d:"2026-12-25", area:"屋面放行", name:"完成蓄水验收并做防水保护", owner:"妈妈 + 防水队 + 泥工", pre:"蓄水足 48 小时且本屋对应部位无渗漏", output:"蓄水结束、水位、对应顶面和保护层照片", gate:true, tip:"不通过不贴阳台/露台砖；通过后尽快封闭保护"},
+    {d:"2026-11-18", area:"阳台防水", name:"二楼阳台涂防水并对天台防水层拉毛", owner:"妈妈 + 防水师傅", pre:"二楼阳台基层清洁、天台防水层已干燥且可处理", output:"二楼阳台防水施工照、天台拉毛前后对比照、材料批次记录", gate:true, tip:"拉毛应由防水师傅按材料体系处理，确认不破坏防水层；抗裂砂浆上料前先做小样并确认粘结效果"},
+    {d:"2026-11-20", area:"排水管封闭", name:"砌砖封闭一楼和二楼南面排水管", owner:"妈妈 + 泥工", pre:"防水师傅完成拉毛并确认可封闭；排水管通水无渗漏、检修和收口方案已定", output:"一楼、二楼南面排水管封闭前后照片、通水记录、检修口/伸缩处理记录", gate:true, tip:"封闭前必须拍管线全景和接口；不得把有渗漏、无检修条件或未完成试水的管道直接砌死"},
+    {d:"2026-12-26", area:"统一地面砖", name:"完成卧室、大厅、餐厅统一地面砖排版放线", owner:"泥工 + 妈妈", pre:"室内基层、门框和地面砖到场", output:"各房间起铺点、通铺方向、门口收口照片", gate:true, tip:"通铺房间不买过门石；入户门和露台按现场复核"},
+    {d:"2026-12-27", area:"统一地面砖", name:"完成第一批卧室和大厅地面砖", owner:"泥工", pre:"排版放线通过", output:"平整度、缝宽、空鼓抽查照片", gate:false, tip:"统一地面砖按房间分批施工，通道铺保护板"},
+    {d:"2026-12-28", area:"统一地面砖", name:"完成厨房地面和餐厅地面砖", owner:"泥工", pre:"第一批地面砖样板通过", output:"厨房、餐厅完成面和橱柜区域照片", gate:true, tip:"橱柜复尺需要最终墙地完成面，完成后立即通知厂家"},
+    {d:"2026-12-29", area:"阳台露台", name:"完成阳台、露台防水坎和地面砖放线", owner:"泥工 + 妈妈", pre:"屋面防水保护完成、清场验收完成", output:"防水坎同款砖排版和栏杆收口照片", gate:true, tip:"阳台和露台防水坎分别使用各自地面同款砖"},
+    {d:"2026-12-30", area:"阳台露台", name:"完成阳台地砖和防水坎同款砖", owner:"泥工", pre:"阳台区域放行", output:"阳台坡度、门槛、栏杆收口照片", gate:true, tip:"栏杆不得直接固定在砖上或随意打穿防水层"},
+    {d:"2026-12-31", area:"阳台露台", name:"完成露台地砖和防水坎同款砖", owner:"泥工", pre:"露台蓄水通过、材料到场", output:"露台排水、门口、压顶砖和保护照片", gate:true, tip:"完成后先保护，不马上让其他工种堆料"},
+    {d:"2027-01-02", area:"贴砖验收", name:"逐区检查瓷砖空鼓、平整度和收口", owner:"妈妈 + 泥工", pre:"各区域贴砖完成", output:"分区验收表、空鼓和缺砖整改清单", gate:true, tip:"不合格项标位置、拍照、定整改日期"},
+    {d:"2027-01-03", area:"橱柜", name:"完成厨房橱柜复尺并确认生产图", owner:"橱柜厂家 + 儿子", pre:"厨房墙地砖完成、设备尺寸齐全", output:"复尺尺寸、生产图、开孔位置确认", gate:true, tip:"水槽、烟机、净水器、电器开孔必须和实物型号一致"},
+    {d:"2027-01-04", area:"成品安装", name:"复核室内门、洁具、灯具安装条件", owner:"儿子 + 妈妈", pre:"墙地砖和油漆面达到安装条件", output:"各家进场顺序、缺件清单和安装预约", gate:false, tip:"洁具安装前再确认马桶坑距、下水和防漏胶"},
+    {d:"2027-01-05", area:"收尾", name:"完成第一轮安装后通水、通电和开关测试", owner:"水电师傅 + 妈妈", pre:"洁具、灯具、开关安装完成", output:"通水通电测试表、漏水和跳闸问题清单", gate:true, tip:"发现问题先修再进入开荒保洁"},
+    {d:"2027-01-06", area:"入住准备", name:"按楼层清点春节入住缺口", owner:"儿子 + 女朋友", pre:"主要成品安装完成", output:"只含真实缺口的采购单和到货日期", gate:false, tip:"已买、不买、床/床垫/床架不重复列入"},
+    {d:"2027-01-07", area:"入住准备", name:"完成开荒保洁并启动通风记录", owner:"保洁 + 妈妈", pre:"施工垃圾和安装收尾完成", output:"保洁前后照片、每日通风记录", gate:false, tip:"通风期间不要急着布置非必要软装"},
+    {d:"2027-01-25", area:"入住验收", name:"完成春节入住前总检查", owner:"儿子 + 妈妈", pre:"保洁、通风和必要设备可用", output:"入住放行清单、未完成项及临时措施", gate:true, tip:"浴室能用、厨房能做饭、门窗能锁、重点区域无漏水才放行"}
   ],
   coord: [
     { hot:true, who:"推拉门厂家", what:"阳台、露台 6 樘推拉门的门框到货并装好", when:"11 月 20 日（下周五）运到并开始装；几天装完<span class='tbd'>还没问到</span>", before:"外墙开喷前，约 11 月 24 日", blocks:"外墙队喷漆、防水队进场", st:"todo", chase:"儿子问几天装完；妈妈当天收货、对高度" },
@@ -462,18 +539,52 @@ const DATA = {
     { id:"fs1", g:"fs", status:"done", name:"天台地面做坡度", meta:"9 月 24 日完成", what:"天台地面已做成往排水口斜，排水孔已打好。" },
     { id:"fs2", g:"fs", status:"risk", name:"天台太空能主机的底座", meta:"做法待确认 · 天台防水前完成", pit:[6],
       what:"底座和所有可能穿透防水层的节点必须先定做法；天窗先装并完成泛水收口。外墙高处施工和清场完成后，防水队再整体收口，避免防水层被拉爆螺丝或工具破坏。" },
-    { id:"fs3", g:"fs", status:"todo", gate:true, name:"厨房、卫生间防水 + 放水试 48 小时", meta:"可与外墙施工并行 · 具体日期待泥工确认", s:"2026-11-25", e:"2026-12-05", pre:["wq3","tm2"], pit:[6,5],
-      need:["防水材料买好（墙面和地面用什么料要先定）","地漏位置和泥工在现场定死"],
-      what:"厨房和卫生间在室内，可以与外墙修补、喷漆等工序并行；但防水完成后要保护好，禁止外墙工具、砂浆和杂物进入。放水泡够 48 小时，合格后再贴厨卫砖。", 
-      mom:["刷 3 遍，每遍拍照；洗澡那面墙刷到顶。",
-           "放水泡够 48 小时。<b>楼下吊顶已经封好</b>，这两天早晚都要去楼下看天花板，有湿印马上放水、拍照。",
-           "合格后地面盖一层保护，别直接踩在防水层上。"] },
+    { id:"fs3", g:"fs", status:"todo", gate:true, name:"厨房、卫生间防水阶段汇总（见 bth1–bth18）", meta:"不得把检查、回填、防水、闭水、保护混成一项", s:"2026-11-18", e:"2026-12-05", pre:["wq3","tm2"], pit:[6,5],
+      need:["按 bth1–bth18 逐项完成；每项都要有照片或记录","防水材料买好，墙面和地面做法先确认"],
+      what:"这是厨卫防水阶段的汇总行，真正施工按 bth1–bth18 执行：先检查与测试，再定回填方案，随后回填验收、找平养护、防水分遍、闭水、室内对应部位观察、保护层和贴砖放行。", 
+      mom:["任何一项不合格都不能跳到下一项。","闭水合格后立即做保护，不能让外墙工具和砂浆进入湿区。"] },
+    { id:"bth1", g:"fs", status:"todo", name:"逐间检查卫生间水管、管根、地漏和排水口", meta:"11/18 · 4 间逐间留档", s:"2026-11-18", e:"2026-11-18", pre:["eq0"], gate:true,
+      what:"按卫生间逐间检查冷热水管、管件、排水口、地漏、管根、墙地交接和烟道/排风口。", mom:["每间单独拍全景和节点；发现渗漏、松动、错位不得进入回填。"] },
+    { id:"bth2", g:"fs", status:"done", name:"复核既有水管打压结果并补齐记录", meta:"10/21 已打压通过 · 压力值待补", s:"2026-11-19", e:"2026-11-19", pre:["bth1"], gate:true,
+      what:"不重复假设已验收：核对压力表读数、保压时长、管路范围和现场照片；缺记录就补测并记录。", mom:["压力下降或接头渗水时，先维修并重新测试。"] },
+    { id:"bth3", g:"fs", status:"todo", name:"逐间做排水通水、地漏通球和倒坡检查", meta:"11/19 · 4 间逐间记录", s:"2026-11-19", e:"2026-11-19", pre:["bth2"], gate:true,
+      what:"对地漏、淋浴排水、洗手盆排水逐项通水，地漏通球，确认排水顺畅、无倒坡和返味风险。", mom:["拍排水视频；有堵塞、渗漏或积水，先整改。"] },
+    { id:"bth4", g:"fs", status:"todo", name:"确定每间卫生间回填方案、标高和完成面", meta:"11/20 · 形成书面确认", s:"2026-11-20", e:"2026-11-20", pre:["bth2","bth3"], gate:true,
+      what:"逐间确认回填厚度、材料、分层做法、管道保护、地漏固定、门口标高和后续找坡厚度。", mom:["方案写清楚再施工，不能只接受‘按以前做法’。"] },
+    { id:"bth5", g:"fs", status:"todo", name:"进场验收回填材料和管道保护措施", meta:"11/21 · 材料与照片先验收", s:"2026-11-21", e:"2026-11-21", pre:["bth4"], gate:true,
+      what:"核对回填材料与方案一致，管道已包覆、固定并有检修/防沉降考虑，地漏和排水口已保护。", mom:["材料不符、管道悬空或硬物直接压管，不得开始回填。"] },
+    { id:"bth6", g:"fs", status:"todo", name:"完成卫生间回填施工（分间、分层）", meta:"11/22–11/23 · 每间单独记录", s:"2026-11-22", e:"2026-11-23", pre:["bth5"],
+      what:"按确认方案分层回填，先保护管线，再逐层施工，不一次倒满压管。", mom:["每间拍分层过程和完成标高，不能用一张照片代替全部卫生间。"] },
+    { id:"bth7", g:"fs", status:"todo", name:"回填完成验收并复核管道、地漏和标高", meta:"11/24 · 不合格先整改", s:"2026-11-24", e:"2026-11-24", pre:["bth6"], gate:true,
+      what:"检查沉陷、空鼓、管道位移、地漏堵塞、门口高差和回填面标高，形成问题清单。", mom:["回填验收不通过，不得找平和刷防水。"] },
+    { id:"bth8", g:"fs", status:"todo", name:"找平找坡并处理门口、地漏和管根收口", meta:"11/25 · 完成面一次确定", s:"2026-11-25", e:"2026-11-25", pre:["bth7"],
+      what:"完成卫生间找平、找坡和门口挡水收口，地面向地漏连续排水，禁止形成反坡。", mom:["用泼水或乒乓球检查坡向，拍地漏周边和门口照片。"] },
+    { id:"bth9", g:"fs", status:"todo", name:"检查找平层并开始基层养护", meta:"11/26 · 记录养护起止", s:"2026-11-26", e:"2026-11-26", pre:["bth8"], gate:true,
+      what:"检查平整度、起砂、开裂、空鼓和积水，确认达到防水施工要求后开始养护。", mom:["基层未达到施工方要求，防水日期顺延，不为赶工硬刷。"] },
+    { id:"bth10", g:"fs", status:"todo", name:"清理防水基层并处理松散层、灰尘和油污", meta:"11/27 · 防水施工面放行", s:"2026-11-27", e:"2026-11-27", pre:["bth9"], gate:true,
+      what:"防水前清理基层，处理孔洞、蜂窝、裂缝和不平处，保证表面坚实干净。", mom:["清理前后各拍照片，地漏和管根周边不能留死角。"] },
+    { id:"bth11", g:"fs", status:"todo", name:"施工管根、地漏、阴阳角附加层", meta:"11/28 · 附加层单独验收", s:"2026-11-28", e:"2026-11-28", pre:["bth10"], gate:true,
+      what:"对管根、地漏、阴阳角、门口和墙地交接做附加层，按材料要求等待干燥。", mom:["附加层未覆盖完整、起泡或未干透，不得刷大面。"] },
+    { id:"bth12", g:"fs", status:"todo", name:"完成厨房、卫生间防水第一遍", meta:"11/29 · 记录范围和材料批次", s:"2026-11-29", e:"2026-11-29", pre:["bth11"],
+      what:"按方案完成墙面和地面第一遍防水，淋浴区和管根不得漏刷。", mom:["墙面上翻高度按方案执行；材料整桶和批次先拍照。"] },
+    { id:"bth13", g:"fs", status:"todo", name:"完成防水第二遍并检查交叉涂刷", meta:"11/30 · 达到重涂条件后施工", s:"2026-11-30", e:"2026-11-30", pre:["bth12"],
+      what:"第一遍达到重涂条件后交叉涂刷第二遍，避免漏涂和薄涂。", mom:["未干透不得抢刷；每间单独拍照。"] },
+    { id:"bth14", g:"fs", status:"todo", name:"完成防水第三遍并修补薄弱点", meta:"12/01 · 三遍外观验收", s:"2026-12-01", e:"2026-12-01", pre:["bth13"], gate:true,
+      what:"完成第三遍并检查门口、地漏、管根、墙角和穿墙管等薄弱点，发现起泡、开裂、漏刷立即修补。", mom:["三遍照片齐全后，才能安排闭水。"] },
+    { id:"bth15", g:"fs", status:"todo", name:"封堵地漏并开始 48 小时闭水试验", meta:"12/02–12/04 · 记录水位线和起止时间", s:"2026-12-02", e:"2026-12-04", pre:["bth14"], gate:true,
+      what:"封堵地漏、设置可观察水位线，开始闭水并安排本屋下一层对应部位检查。", mom:["闭水期间检查本屋下一层对应顶面、墙角和管根；水位明显下降或有湿印立即停水整改。"] },
+    { id:"bth16", g:"fs", status:"todo", name:"完成闭水结束检查并形成室内放行记录", meta:"12/04 · 48 小时足时验收", s:"2026-12-04", e:"2026-12-04", pre:["bth15"], gate:true,
+      what:"确认闭水足 48 小时、室内对应部位无湿印，记录水位、检查点和结果，形成放行记录。", mom:["未通过不得贴砖，也不能只凭口头说‘没问题’。"] },
+    { id:"bth17", g:"fs", status:"todo", name:"完成防水保护层并设置湿区施工通道", meta:"12/05 · 闭水合格后立即封闭", s:"2026-12-05", e:"2026-12-05", pre:["bth16"], gate:true,
+      what:"闭水合格后做保护层或等效保护，并规划材料和工具通道，避免直接踩防水膜。", mom:["保护层完成前不让其他工种进湿区堆料。"] },
+    { id:"bth18", g:"fs", status:"todo", gate:true, name:"逐间完成厨卫贴砖放行检查", meta:"12/06 · 通过后才能贴砖", s:"2026-12-06", e:"2026-12-06", pre:["bth17","tile1","tm2","dd3"],
+      what:"逐间核对瓷砖、排版、地漏、烟道/风道、套管、门框下轨、完成面标高、吊顶下沿和成品保护。", mom:["一间一张放行记录；任何一项未闭合就只放行已合格区域。"] },
     { id:"fs4", g:"fs", status:"todo", name:"露台、阳台清理拉爆螺丝和工具", meta:"外墙高处施工基本完成后", s:"2026-12-26", e:"2026-12-29", pre:["wq5","tm2"],
       what:"外墙施工会留下固定升降架子的拉爆螺丝、工具和砂浆碎屑。先由外墙队完成高处施工并清场，逐点检查面板，确认没有会刺破防水层的东西，再做露台和阳台后续。" },
     { id:"fs5", g:"fs", status:"todo", gate:true, name:"天台、露台防水 + 放水试 48 小时", meta:"清理拉爆螺丝和工具后再进场", s:"2026-12-30", e:"2027-01-08", pre:["wq5","tm2","fs2","win4","fs4"], pit:[6,5],
       what:"天台、露台防水要放在外墙高处施工基本完成、升降架子拆除或不再影响、拉爆螺丝和工具清理验收后。这样防水层不会被后续外墙施工破坏；防水完成后再做露台、阳台贴砖。",
       mom:["每刷一遍拍照；材料整桶进场拍照，空桶验收前别让他们拉走。",
-           "泡水 48 小时，<b>楼下吊顶已经封好</b>，要有人盯着楼下天花板和墙角。",
+           "泡水 48 小时，检查本屋下一层对应顶面、墙角和管根；发现湿印立即停止并留证。",
            "不湿才付尾款。"] },
 
     /* ---------- 贴瓷砖 ---------- */
@@ -596,12 +707,27 @@ const unmet = st => (st.pre || []).map(i => BY[i]).filter(p => p.status !== "don
 const nexts = st => S.filter(x => (x.pre || []).includes(st.id));
 const rangeText = st => st.s ? (st.s === st.e ? md(st.s) : md(st.s) + "–" + md(st.e)) : "";
 
+function renderWeekPlan(){
+  const table = document.getElementById("weekTable");
+  if (!table || !DATA.dayPlan || !DATA.dayPlan.length) return;
+  const first = D(DATA.dayPlan[0].d), last = new Date(first.getTime() + 6 * DAY);
+  const dates = [...new Set(DATA.dayPlan.map(x => x.d))].filter(x => { const d = D(x); return d >= first && d <= last; }).sort();
+  const people = [];
+  const activeRows = DATA.dayPlan.filter(x => dates.includes(x.d));
+  activeRows.forEach(x => (x.owner || "待定").split(/\s*\+\s*|、|；/).forEach(p => { if (p && !people.includes(p)) people.push(p); }));
+  const personFor = (row, person) => (row.owner || "待定").split(/\s*\+\s*|、|；/).includes(person);
+  const dayLabel = x => { const d = D(x); return `${d.getMonth()+1}/${d.getDate()}（${"日一二三四五六"[d.getDay()]}）`; };
+  table.innerHTML = `<thead><tr><th>日期</th>${people.map(p => `<th>${p}</th>`).join("")}</tr></thead><tbody>` + dates.map(date => {
+    const rows = DATA.dayPlan.filter(x => x.d === date);
+    return `<tr><th>${dayLabel(date)}</th>${people.map(person => { const mine = rows.filter(x => personFor(x, person)); return `<td>${mine.length ? `<ul>${mine.map(x => `<li>${x.name}${x.gate ? " <span class=\"pill gate\">关卡</span>" : ""}</li>`).join("")}</ul>` : `<span class="weekempty">—</span>`}</td>`; }).join("")}</tr>`;
+  }).join("") + `</tbody>`;
+}
+
 function header(){
   const u = D(DATA.updated);
   document.getElementById("sub").textContent = `${u.getMonth() + 1} 月 ${u.getDate()} 日更新`;
   document.getElementById("now").innerHTML = DATA.now;
-  document.getElementById("hero").innerHTML = DATA.hero.map(h =>
-    `<div class="card"><div class="who">${h.who}</div><ul>${h.items.map(i => `<li><span class="dt">${i.d}</span><span>${i.t}</span></li>`).join("")}</ul></div>`).join("");
+  renderWeekPlan();
   const fl = DATA.flow.map(f => {
     if (f.status) return f.status;
     const ss = f.ids.map(i => BY[i].status);
@@ -640,6 +766,20 @@ function detail(st){
   if (st.mom && st.mom.length) h += `<h3>现场要看的</h3><ul class="plain">${st.mom.map(m => `<li>${m}</li>`).join("")}</ul>`;
   if (st.pit && st.pit.length) h += `<h3>以前踩过的坑</h3><ul class="plain">${st.pit.map(i => `<li>${PIT[i].t}。<span style="color:var(--ok)">${PIT[i].next}</span></li>`).join("")}</ul>`;
   return h;
+}
+
+/* ---------------- 每日执行清单 ---------------- */
+let dayDate = (DATA.dayPlan && DATA.dayPlan[0] && DATA.dayPlan[0].d) || DATA.updated;
+const localISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+function shiftDay(n){ const d = D(dayDate); d.setDate(d.getDate() + n); dayDate = localISO(d); renderDayPlan(); }
+function renderDayPlan(){
+  const input = document.getElementById("dayDate"), list = document.getElementById("dayList"), summary = document.getElementById("daySummary");
+  if (!input || !list) return;
+  input.value = dayDate;
+  const rows = (DATA.dayPlan || []).filter(x => x.d === dayDate);
+  const d = D(dayDate), label = `${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日`;
+  summary.textContent = `${label} · ${rows.length ? `今日 ${rows.length} 项：每项完成后拍照并记录输出` : "今天没有预设任务，可查看前后日期或补充现场任务"}`;
+  list.innerHTML = rows.length ? rows.map(x => `<article class="dayitem ${x.gate ? "risk" : ""}"><h4>${x.name}</h4><div class="daymeta"><span class="tag">${x.area}</span><span class="tag">负责人：${x.owner}</span>${x.gate ? `<span class="tag">关卡</span>` : ""}</div><p><b>前置：</b>${x.pre}</p><p><b>当天输出：</b>${x.output}</p><p><small><b>现场提醒：</b>${x.tip}</small></p></article>`).join("") : `<div class="dayempty">暂无这一天的拆分任务。先用日期按钮查看下一天；实际进度变化后，在 DATA.dayPlan 中补一行即可。</div>`;
 }
 
 /* ---------------- 时间表 ---------------- */
@@ -813,7 +953,7 @@ function tabs(){
   const show = v => {
     btns.forEach(b => b.setAttribute("aria-selected", String(b.dataset.v === v)));
     ["coord", "gantt", "buy", "check", "pits"].forEach(k => document.getElementById("v-" + k).hidden = k !== v);
-    if (v === "gantt") renderGantt();
+    if (v === "gantt") { renderDayPlan(); renderGantt(); }
     if (v === "buy") buy();
     try { localStorage.setItem("house-tab2", v); } catch (e) {}
   };
@@ -832,6 +972,10 @@ function tabs(){
   };
   document.getElementById("gOpenAll").addEventListener("click", () => { closed.clear(); renderGantt(); syncGroupButtons(); });
   document.getElementById("gCloseAll").addEventListener("click", () => { DATA.groups.forEach(g => closed.add(g.id)); selId = null; renderGantt(); syncGroupButtons(); });
+  document.getElementById("dayDate").addEventListener("change", e => { dayDate = e.target.value || DATA.updated; renderDayPlan(); });
+  document.getElementById("dayPrev").addEventListener("click", () => shiftDay(-1));
+  document.getElementById("dayToday").addEventListener("click", () => { dayDate = DATA.updated; renderDayPlan(); });
+  document.getElementById("dayNext").addEventListener("click", () => shiftDay(1));
   syncGroupButtons();
   let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => { if (!document.getElementById("v-gantt").hidden) renderGantt(); }, 150); });
 }
