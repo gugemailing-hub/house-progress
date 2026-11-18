@@ -226,8 +226,8 @@ section[hidden]{display:none}
   <div class="flow" id="flow"></div>
   <p class="hint" style="margin-top:8px">按 1、2、3 的顺序做。绿色＝做完了，蓝色＝正在做，灰色＝还没轮到。前面一格没变绿，后面一格就不该开工。</p>
   <div class="weekplan" id="weekplan">
-    <h3 style="margin-top:0">按日期看本周执行表</h3>
-    <p class="hint">纵向是日期，横向是人物；每格只写当天要做的事情。左右滑动可查看完整表格。</p>
+    <h3 style="margin-top:0">按日期看最近 7 天计划表</h3>
+    <p class="hint">以当前查看日期为起点，固定显示连续 7 天；纵向是日期，横向是这 7 天内有任务的人物。没有任务的日期也保留，左右滑动可查看完整表格。</p>
     <div class="tblwrap"><table class="weektbl" id="weekTable"></table></div>
   </div>
   <details class="notes" id="notes"></details>
@@ -733,12 +733,14 @@ const md = s => { const d = D(s); return (d.getMonth() + 1) + "/" + d.getDate();
 const unmet = st => (st.pre || []).map(i => BY[i]).filter(p => p.status !== "done");
 const nexts = st => S.filter(x => (x.pre || []).includes(st.id));
 const rangeText = st => st.s ? (st.s === st.e ? md(st.s) : md(st.s) + "–" + md(st.e)) : "";
+let dayDate = (DATA.dayPlan && DATA.dayPlan[0] && DATA.dayPlan[0].d) || DATA.updated;
+const localISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 
 function renderWeekPlan(){
   const table = document.getElementById("weekTable");
   if (!table || !DATA.dayPlan || !DATA.dayPlan.length) return;
-  const first = D(DATA.dayPlan[0].d), last = new Date(first.getTime() + 6 * DAY);
-  const dates = [...new Set(DATA.dayPlan.map(x => x.d))].filter(x => { const d = D(x); return d >= first && d <= last; }).sort();
+  const anchor = D(dayDate || DATA.updated);
+  const dates = Array.from({length:7}, (_, i) => { const d = new Date(anchor.getTime() + i * DAY); return localISO(d); });
   const people = [];
   const activeRows = DATA.dayPlan.filter(x => dates.includes(x.d));
   activeRows.forEach(x => (x.owner || "待定").split(/\s*\+\s*|、|；/).forEach(p => { if (p && !people.includes(p)) people.push(p); }));
@@ -796,13 +798,12 @@ function detail(st){
 }
 
 /* ---------------- 每日执行清单 ---------------- */
-let dayDate = (DATA.dayPlan && DATA.dayPlan[0] && DATA.dayPlan[0].d) || DATA.updated;
-const localISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 function shiftDay(n){ const d = D(dayDate); d.setDate(d.getDate() + n); dayDate = localISO(d); renderDayPlan(); }
 function renderDayPlan(){
   const input = document.getElementById("dayDate"), list = document.getElementById("dayList"), summary = document.getElementById("daySummary");
   if (!input || !list) return;
   input.value = dayDate;
+  renderWeekPlan();
   const rows = (DATA.dayPlan || []).filter(x => x.d === dayDate);
   const d = D(dayDate), label = `${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日`;
   summary.textContent = `${label} · ${rows.length ? `今日 ${rows.length} 项：每项完成后拍照并记录输出` : "今天没有预设任务，可查看前后日期或补充现场任务"}`;
