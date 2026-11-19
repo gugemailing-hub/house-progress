@@ -325,7 +325,7 @@ section[hidden]{display:none}
   </div>
   <div class="gmain">
     <h2>总控图：什么时候做什么，谁在等谁</h2>
-    <p class="hint">三类事项共用一条时间轴 —— <b>我的动作</b>（按周汇总，数字＝那周还没打钩的件数）／<b>采购截止</b>（黄条＝定样期，红点＝最晚下单，虚线＝等货到）／<b>工序</b>（谁在什么时候干什么）。<b>点任意一行</b>都会在它下面展开详情。</p>
+    <p class="hint">三类事项共用一条时间轴 —— <b>我的动作</b>（按周汇总，数字＝那周还没打钩的件数）／<b>采购</b>（按 P0–P3 分组；青条＝定样期，红点＝最晚下单，虚线＝等货到）／<b>工序</b>（谁在什么时候干什么）。<b>点任意一行</b>都会在它下面展开详情。</p>
     <div class="gbar-top">
       <div class="legend" id="legend"></div>
       <div class="winswitch" role="group" aria-label="时间范围">
@@ -346,8 +346,8 @@ section[hidden]{display:none}
   <h2 class="sec">想看细节，或翻旧账</h2>
 
   <details class="fold">
-    <summary>要买什么：25 项的规格、数量、为什么现在买</summary>
-    <p class="hint">目标：2027 年 2 月 6 日春节前能住。<b>先看“必须先定”</b>，再看“何时下单”；日期都是倒排建议，实际以施工队确认的开工日为准。时间点看上面总控图的「采购截止」区。</p>
+    <summary>要买什么：采购明细与执行说明</summary>
+    <p class="hint">目标：2027 年 2 月 6 日春节前能住。总控图的「采购」区已合并采购阶段与采购截止：按 P0–P3 看优先级，点采购行看定样、下单、到货和负责人；本区保留规格、数量和采购原因明细。</p>
     <div class="buyintro" id="buyIntro"></div>
     <div class="buyfilters" id="buyFilters" role="toolbar" aria-label="采购筛选"></div>
     <div class="tblwrap"><table class="buytbl" id="buyTable"></table></div>
@@ -1265,14 +1265,20 @@ function renderGantt(){
     h += `<div class="grow step merow"><button class="glab" data-me="1">我手上的活<small>数字＝这周还没打钩的件数，点开看清单</small></button><div class="gtrack" style="width:${width}px">${lines}${marks}${segs}</div></div>`;
   }
 
-  /* ===== 第二区：采购截止 ===== */
-  const buyOpen = !closed.has("__buy");
+  /* ===== 第二区：采购（合并采购阶段与截止） ===== */
+  const buyOpen = !closed.has("buy");
   const buys = DATA.buy.map((x, i) => ({ x, i }))
     .filter(({ x }) => hitWin(x.s, x.o, rs, re) || (x.a && hitWin(x.o, x.a, rs, re)))
-    .sort((A, B) => (A.x.o || "").localeCompare(B.x.o || "") || (A.x.p || "").localeCompare(B.x.p || ""));
-  h += `<div class="grow ggrp" data-open="${buyOpen}"><button class="glab" data-g="__buy" aria-expanded="${buyOpen}"><span class="caret">▼</span>采购截止<small>儿子 · 黄条＝定样期，红点＝最晚下单</small></button><div class="gtrack" style="width:${width}px"></div></div>`;
+    .sort((A, B) => (A.x.p || "").localeCompare(B.x.p || "") || (A.x.o || "").localeCompare(B.x.o || ""));
+  h += `<div class="grow ggrp" data-open="${buyOpen}"><button class="glab" data-g="buy" aria-expanded="${buyOpen}"><span class="caret">▼</span>采购<small>儿子 · P0–P3 分组 · 青条＝定样期，红点＝最晚下单，虚线＝到货</small></button><div class="gtrack" style="width:${width}px"></div></div>`;
   if (buyOpen) {
+    let lastPhase = "";
     buys.forEach(({ x, i }) => {
+      if (x.p !== lastPhase) {
+        lastPhase = x.p;
+        const phaseTitle = x.p === "p0" ? "P0 · 必须先定，会卡工序" : x.p === "p1" ? "P1 · 春节前必须买" : x.p === "p2" ? "P2 · 可稍后补齐" : "P3 · 春节后再买";
+        h += `<div class="grow ggrp buyphase"><div class="glab"><span class="caret">·</span>${phaseTitle}<small>采购明细</small></div><div class="gtrack" style="width:${width}px"></div></div>`;
+      }
       const ls = clamp(px(x.s || x.o)), lo = clamp(px(x.o));
       const w = Math.max(lo - ls, 5);
       let bar = `<span class="gb buy" style="left:${ls}px;width:${w}px"></span><span class="gdot ${x.p === "p0" ? "" : "warn"}" style="left:${lo - 4}px"></span>`;
@@ -1282,13 +1288,15 @@ function renderGantt(){
       }
       bar += `<span class="gbl" style="left:${lo + 9}px;top:14px;font-size:11.5px">${md(x.o)} 前下单${x.a ? " → " + md(x.a) + " 到场" : ""}</span>`;
       const tag = x.p === "p0" ? `<span class="lock">🔴 会卡工序</span>` : x.p === "p1" ? "春节前要买" : x.p === "p2" ? "可晚买" : "春节后再买";
-      h += `<div class="grow step buyrow ${x.p} ${selBuy === i ? "sel" : ""}" data-buy="${i}"><button class="glab" data-buy="${i}">${esc(x.item)}<small>${tag}</small></button>
+      const phase = x.p === "p0" ? "P0 必须先定" : x.p === "p1" ? "P1 春节前必须买" : x.p === "p2" ? "P2 可稍后补齐" : "P3 春节后再买";
+      h += `<div class="grow step buyrow ${x.p} ${selBuy === i ? "sel" : ""}" data-buy="${i}"><button class="glab" data-buy="${i}">${esc(x.item)}<small>${phase} · ${tag}</small></button>
         <div class="gtrack" style="width:${width}px">${lines}${marks}${bar}</div></div>`;
     });
   }
 
   /* ===== 第三区：工序 ===== */
   DATA.groups.forEach(g => {
+    if (g.id === "buy") return;
     const all = S.filter(s => s.g === g.id);
     const rows = all.filter(st => hitWin(st.s, st.e, rs, re) && (st.s || st.status !== "done"));
     const dn = all.filter(s => s.status === "done").length, open = !closed.has(g.id);
@@ -1323,7 +1331,7 @@ function renderGantt(){
 
   const syncGB = () => {
     const open = document.getElementById("gOpenAll"), close = document.getElementById("gCloseAll");
-    const ids = [...DATA.groups.map(g => g.id), "__me", "__buy"];
+    const ids = [...DATA.groups.map(g => g.id), "__me", "buy"];
     const allOpen = ids.every(g => !closed.has(g)), allClosed = ids.every(g => closed.has(g));
     if (!open || !close) return;
     open.classList.toggle("active", allOpen); open.setAttribute("aria-pressed", String(allOpen)); open.title = allOpen ? "当前已全部展开" : "展开全部事项分类"; open.innerHTML = `<span class="mark">${allOpen ? "✓" : "＋"}</span>${allOpen ? "已全部展开" : "全部展开"}`;
@@ -1529,7 +1537,7 @@ function initUI(){
   document.getElementById("zBig").addEventListener("click", () => { zoom = "big"; renderGantt(); });
   document.getElementById("gOpenAll").addEventListener("click", () => { closed.clear(); renderGantt(); });
   document.getElementById("gCloseAll").addEventListener("click", () => {
-    [...DATA.groups.map(g => g.id), "__me", "__buy"].forEach(id => closed.add(id));
+    [...DATA.groups.map(g => g.id).filter(id => id !== "buy"), "__me", "buy"].forEach(id => closed.add(id));
     selId = null; selBuy = null; selMe = null; renderGantt();
   });
   /* 7 天表：点任务名看详情（不触发打钩） */
@@ -1554,7 +1562,6 @@ function initUI(){
   });
 }
 
-closed.add("buy");   /* 「采购任务」工序组默认折叠：上面「采购截止」区已按截止点展开 */
 header(); coord(); legend(); check(); pits(); buy();
 renderGantt();
 initUI();
