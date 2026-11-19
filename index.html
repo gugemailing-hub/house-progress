@@ -1320,12 +1320,8 @@ function renderGantt(){
     const rows = all.filter(st => hitWin(st.s, st.e, rs, re) && (st.s || st.status !== "done"));
     const dn = all.filter(s => s.status === "done").length, open = !closed.has(g.id);
     if (!rows.length) return;
-    const subKey = `sub:${g.id}:main`, subOpen = !closed.has(subKey);
-    const subStart = rows.map(s => s.s).filter(Boolean).sort()[0], subEnd = rows.map(s => s.e).filter(Boolean).sort().pop();
     h += `<div class="grow ggrp" data-open="${open}"><button class="glab" data-g="${g.id}" aria-expanded="${open}"><span class="caret">▼</span>${g.name}<small>${g.who} · ${dn}/${all.length}</small></button>${dateCols(null, null)}<div class="gtrack" style="width:${width}px"></div></div>`;
     if (!open) return;
-    h += `<div class="grow ggrp buyphase gsub" data-open="${subOpen}"><button class="glab" data-g="${subKey}" aria-expanded="${subOpen}"><span class="caret">▼</span>本阶段事项<small>${rows.length} 项</small></button>${dateCols(subStart, subEnd)}<div class="gtrack" style="width:${width}px"></div></div>`;
-    if (!subOpen) return;
     rows.forEach(st => {
       const um = st.status !== "done" ? unmet(st) : [];
       let bar;
@@ -1353,7 +1349,7 @@ function renderGantt(){
 
   const syncGB = () => {
     const open = document.getElementById("gOpenAll"), close = document.getElementById("gCloseAll");
-    const ids = [...DATA.groups.map(g => g.id), ...DATA.groups.filter(g => g.id !== "buy").map(g => `sub:${g.id}:main`), "__me", "buy", "buyphase-p0", "buyphase-p1", "buyphase-p2", "buyphase-p3"];
+    const ids = [...DATA.groups.map(g => g.id).filter(id => id !== "buy"), "__me", "buy", "buyphase-p0", "buyphase-p1", "buyphase-p2", "buyphase-p3"];
     const allOpen = ids.every(g => !closed.has(g)), allClosed = ids.every(g => closed.has(g));
     if (!open || !close) return;
     open.classList.toggle("active", allOpen); open.setAttribute("aria-pressed", String(allOpen)); open.title = allOpen ? "当前已全部展开" : "展开全部事项分类"; open.innerHTML = `<span class="mark">${allOpen ? "✓" : "＋"}</span>${allOpen ? "已全部展开" : "全部展开"}`;
